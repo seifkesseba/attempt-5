@@ -817,7 +817,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Required Program *</label>
-                        <select id="bookLevel" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <select id="bookLevel" onchange="updateBookingTutorDropdown()" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                             <option value="IB">IB</option>
                             <option value="AD">AD</option>
                         </select>
@@ -1250,8 +1250,13 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
           await registration.commit();
           closeModal('tutorSignupModal');e.target.reset();updateTutorSubjectSelection();await loadData();showToast('Application submitted for interview.');
         }catch(e){errorMsg(e);}}
+        // Legacy skill-level profiles remain bookable under either current program.
+        // New IB/AD profiles are matched to their selected program.
+        function tutorMatchesProgram(t, program) {
+          return t.level === program || ['Advanced Level', 'AP / IB Mastery'].includes(t.level);
+        }
         function updateBookingTutorDropdown(){
-          const subject=val('bookSubject'),select=$('bookTutorSelect'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&['IB','AD'].includes(t.level)&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
+          const subject=val('bookSubject'),select=$('bookTutorSelect'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&tutorMatchesProgram(t,val('bookLevel'))&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
           select.innerHTML='<option value="AUTO">-- Auto Match Available Tutor --</option>';
           matches.forEach(t=>{const opt=document.createElement('option');opt.value=t.id;opt.textContent=`${t.name} (${t.school}) - ${t.level}`;select.appendChild(opt);});
           $('noTutorAvailableMsg').classList.toggle('hidden',matches.length>0);$('bookSubmitBtn').disabled=!matches.length;
@@ -1264,7 +1269,7 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
             const proceed=confirm('If this is a new account, select OK to register. If you already have an account, select Cancel and check your password.');if(!proceed)return;
             cred=await fb.createUserWithEmailAndPassword(fb.auth,email,password);
           }else throw err;}}
-          const subject=val('bookSubject'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&['IB','AD'].includes(t.level)&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
+          const subject=val('bookSubject'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&tutorMatchesProgram(t,val('bookLevel'))&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
           const tutorUid=val('bookTutorSelect')==='AUTO'?matches[0]?.id:val('bookTutorSelect');if(!tutorUid)throw Error('No approved tutor available.');
           await fb.addDoc(fb.collection(fb.db,'bookings'),{studentUid:cred.user.uid,studentName:val('bookStudentName'),studentEmail:email,studentSchool:val('bookStudentSchool'),studentGrade:val('bookStudentGrade'),studentPhone:val('bookStudentPhone'),level:val('bookLevel'),tutorUid,subject,date:val('bookDate'),time:val('bookCustomTime'),format:val('bookFormat'),note:'',status:'Pending'});
           closeModal('tuteeBookingModal');e.target.reset();await loadData();showToast('Booking request sent to tutor.');
@@ -1305,7 +1310,7 @@ function renderPublicTutors() {
 
             if (schoolVal !== 'All') filtered = filtered.filter(t => t.school === schoolVal);
             if (subjectVal !== 'All') filtered = filtered.filter(t => (Array.isArray(t.subjects)?t.subjects.includes(subjectVal):t.subject === subjectVal));
-            if (levelVal !== 'All') filtered = filtered.filter(t => t.level === levelVal);
+            if (levelVal !== 'All') filtered = filtered.filter(t => tutorMatchesProgram(t, levelVal));
 
             if (filtered.length === 0) {
                 grid.innerHTML = `
