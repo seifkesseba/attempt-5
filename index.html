@@ -107,12 +107,12 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div class="text-center max-w-3xl mx-auto">
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/10 text-cyan-300 border border-white/20 backdrop-blur mb-6 shadow-xl">
-                            <i class="fa-solid fa-school text-amber-400"></i> Multi-School Verified Peer Tutoring Platform
+                            <i class="fa-solid fa-school text-amber-400"></i> AIS Verified Peer Tutoring Platform
                         </div>
                         
                         <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
                             Elevate Academic Mastery. <br>
-                            <span class="gradient-text">Across Partner Schools.</span>
+                            <span class="gradient-text">At AIS.</span>
                         </h1>
                         
                         <p class="mt-6 text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
@@ -140,8 +140,8 @@
                             <div class="text-xs font-semibold text-amber-300/80 mt-1">Awaiting Interview</div>
                         </div>
                         <div class="glass-dark p-5 rounded-2xl text-center border border-white/10">
-                            <div class="text-3xl font-extrabold text-cyan-400" id="statSchoolCount">Multi-School</div>
-                            <div class="text-xs font-semibold text-slate-400 mt-1">Cross-School Network</div>
+                            <div class="text-3xl font-extrabold text-cyan-400" id="statSchoolCount">AIS</div>
+                            <div class="text-xs font-semibold text-slate-400 mt-1">AIS Community</div>
                         </div>
                         <div class="glass-dark p-5 rounded-2xl text-center border border-white/10">
                             <div class="text-3xl font-extrabold text-emerald-400">Custom Time</div>
@@ -152,6 +152,7 @@
             </section>
 
             <!-- Verified Tutor Directory -->
+            <div class="bg-white text-center py-4"><button onclick="openModal('reviewModal')" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 text-sm"><i class="fa-solid fa-star"></i> Rate a Completed Tutoring Session</button></div>
             <section id="tutorDirectory" class="py-16 bg-slate-50 border-b border-slate-200">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
@@ -189,11 +190,9 @@
                             </select>
                             
                             <select id="levelFilter" onchange="renderPublicTutors()" class="bg-white border border-slate-300 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl focus:ring-brand-500 focus:border-brand-500 p-3 shadow-sm">
-                                <option value="All">All Skill Levels</option>
-                                <option value="AP / IB Mastery">AP / IB Mastery</option>
-                                <option value="Advanced Level">Advanced Level</option>
-                                <option value="Intermediate Level">Intermediate Level</option>
-                                <option value="Foundational Level">Foundational Level</option>
+                                <option value="All">All Programs (IB / AD)</option>
+                                <option value="IB">IB</option>
+                            <option value="AD">AD</option>
                             </select>
                         </div>
                     </div>
@@ -611,7 +610,7 @@
                 <div class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center font-extrabold text-xs">P</div>
                 <span class="text-white font-bold">Peer Tutoring Network Enterprise</span>
             </div>
-            <p>Multi-School Collaborative Platform • Founded by Seif Kesseba • Interview Verification Protocol</p>
+            <p>AIS Peer Tutoring Platform • Founded by Seif Kesseba • Interview Verification Protocol</p>
             <div class="flex items-center gap-4">
                 <button onclick="openAdminPasswordModal()" class="hover:text-amber-400 transition-colors">Head Admin Portal Access</button>
             </div>
@@ -660,7 +659,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">School Name *</label>
-                    <input type="text" id="signupTutorSchool" required placeholder="e.g. International Academy / Cairo High School" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                    <select id="signupTutorSchool" required class="w-full border border-slate-300 rounded-xl p-3 text-sm"><option value="AIS">AIS</option></select>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -671,8 +670,11 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Grade Level *</label>
                         <select id="signupTutorGrade" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
-                            <option value="11th Grade">11th Grade (Junior)</option>
-                            <option value="12th Grade">12th Grade (Senior)</option>
+                            <option value="8th Grade">Grade 8</option>
+<option value="9th Grade">Grade 9</option>
+<option value="10th Grade">Grade 10</option>
+<option value="11th Grade">Grade 11</option>
+<option value="12th Grade">Grade 12</option>
                         </select>
                     </div>
                 </div>
@@ -694,8 +696,8 @@
                         <input type="number" step="0.01" min="3.0" max="4.0" id="signupTutorGPA" required placeholder="e.g. 3.92" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Subject Mastery *</label>
-                        <select id="signupTutorSubject" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Subjects to Teach (select 1–4) *</label><p class="text-xs text-slate-500 mb-2">Hold Ctrl (Windows) or Command (Mac) to select multiple subjects.</p>
+                        <select id="signupTutorSubject" multiple size="7" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                             <option value="Math">Math</option>
                             <option value="Physics">Physics</option>
                             <option value="Chemistry">Chemistry</option>
@@ -714,12 +716,10 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Skill Level *</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Program *</label>
                         <select id="signupTutorLevel" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
-                            <option value="AP / IB Mastery">AP / IB Mastery</option>
-                            <option value="Advanced Level">Advanced Level</option>
-                            <option value="Intermediate Level">Intermediate Level</option>
-                            <option value="Foundational Level">Foundational Level</option>
+                            <option value="IB">IB</option>
+                            <option value="AD">AD</option>
                         </select>
                     </div>
                 </div>
@@ -771,7 +771,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Your School *</label>
-                        <input type="text" id="bookStudentSchool" required placeholder="e.g. Horizon Academy" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <select id="bookStudentSchool" required class="w-full border border-slate-300 rounded-xl p-3 text-sm"><option value="AIS">AIS</option></select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Phone Number *</label>
@@ -779,6 +779,7 @@
                     </div>
                 </div>
 
+                <div class="mb-4"><label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student Grade *</label><select id="bookStudentGrade" required class="w-full border border-slate-300 rounded-xl p-3 text-sm"><option value="">Choose grade</option><option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option><option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option><option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option></select></div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Subject *</label>
@@ -801,12 +802,10 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Required Level *</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Required Program *</label>
                         <select id="bookLevel" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
-                            <option value="AP / IB Mastery">AP / IB Mastery</option>
-                            <option value="Advanced Level">Advanced Level</option>
-                            <option value="Intermediate Level">Intermediate Level</option>
-                            <option value="Foundational Level">Foundational Level</option>
+                            <option value="IB">IB</option>
+                            <option value="AD">AD</option>
                         </select>
                     </div>
                 </div>
@@ -934,12 +933,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Verified Skill Level Badge *</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Verified Program *</label>
                     <select id="intVerifiedLevel" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm">
-                        <option value="AP / IB Mastery">AP / IB Mastery</option>
-                        <option value="Advanced Level">Advanced Level</option>
-                        <option value="Intermediate Level">Intermediate Level</option>
-                        <option value="Foundational Level">Foundational Level</option>
+                        <option value="IB">IB</option>
+                            <option value="AD">AD</option>
                     </select>
                 </div>
 
@@ -1017,6 +1014,23 @@
     </div>
 
 
+    <!-- Student rating modal -->
+    <div id="reviewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button type="button" onclick="closeModal('reviewModal')" class="absolute right-5 top-5 text-slate-500" aria-label="Close">✕</button>
+        <h3 class="text-xl font-extrabold text-slate-900 mb-2">Rate Your Tutor</h3>
+        <p class="text-xs text-slate-600 mb-5">After your session hours are verified, you can rate your tutor once per booking.</p>
+        <form onsubmit="submitTutorReview(event)" class="space-y-4">
+          <label class="block text-xs font-bold">Your booking account email<input id="reviewEmail" type="email" required class="w-full mt-1 border rounded-xl p-3"></label>
+          <label class="block text-xs font-bold">Your booking account password<input id="reviewPassword" type="password" required class="w-full mt-1 border rounded-xl p-3"></label>
+          <button type="button" onclick="findReviewBookings()" class="text-xs font-bold text-indigo-700 border border-indigo-200 rounded-xl p-3 w-full">Find My Completed Sessions</button>
+          <label class="block text-xs font-bold">Completed session<select id="reviewBooking" required class="w-full mt-1 border rounded-xl p-3"><option value="">Sign in and find your sessions</option></select></label>
+          <label class="block text-xs font-bold">Rating<select id="reviewStars" required class="w-full mt-1 border rounded-xl p-3"><option value="">Choose a rating</option><option value="5">★★★★★ — 5 stars</option><option value="4">★★★★☆ — 4 stars</option><option value="3">★★★☆☆ — 3 stars</option><option value="2">★★☆☆☆ — 2 stars</option><option value="1">★☆☆☆☆ — 1 star</option></select></label>
+          <label class="block text-xs font-bold">Optional review<textarea id="reviewComment" maxlength="500" rows="3" placeholder="Share your experience (optional)" class="w-full mt-1 border rounded-xl p-3"></textarea></label>
+          <button type="submit" class="w-full bg-indigo-600 text-white rounded-xl py-3 font-bold">Submit Review</button>
+        </form>
+      </div>
+    </div>
     <!-- Toast Notification Popup -->
     <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 transition-all duration-300 opacity-0 pointer-events-none z-50">
         <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
@@ -1038,7 +1052,7 @@
         };
         const ADMIN_UID = 'oET89CIafkX2tCM5zpSvjHm01a33';
         let tutors=[], bookingRequests=[], completedSessions=[], currentLoggedTutor=null, isAdminLoggedIn=false;
-        let fb=null, user=null, pendingSessions=[];
+        let fb=null, user=null, pendingSessions=[], tutorReviews=[];
         const $=id=>document.getElementById(id);
         const val=id=>$(id).value.trim();
         const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1069,6 +1083,8 @@
                 pendingSessions=ss.docs.map(d=>({id:d.id,...d.data()}));
               } else pendingSessions=[];
             }
+            const reviewSnap=await fb.getDocs(fb.collection(fb.db,'reviews'));
+            tutorReviews=reviewSnap.docs.map(d=>({id:d.id,...d.data()}));
             const publicLogs=await fb.getDocs(fb.collection(fb.db,'publicSessions'));
             completedSessions=publicLogs.docs.map(d=>({id:d.id,...d.data()}));
             if(currentLoggedTutor)currentLoggedTutor=tutors.find(t=>t.id===user?.uid)||currentLoggedTutor;
@@ -1168,16 +1184,19 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
         async function logoutTutor(){await fb.signOut(fb.auth);currentLoggedTutor=null;switchPortal('public');}
         async function handleTutorSignUp(e){e.preventDefault();if(!fb)return;try{
           if(fb.auth.currentUser && !confirm('Creating a tutor account will sign out the current account. Continue?'))return;
+          const subjects=[...$('signupTutorSubject').selectedOptions].map(o=>o.value);
+          if(subjects.length<1||subjects.length>4)throw Error('Please select between 1 and 4 subjects.');
+          if(!['8th Grade','9th Grade','10th Grade','11th Grade','12th Grade'].includes(val('signupTutorGrade')))throw Error('Tutors must be in Grade 8 or higher.');
           const credential=await fb.createUserWithEmailAndPassword(fb.auth,val('signupTutorEmail'),val('signupTutorPassword'));
           const uid=credential.user.uid;
           await fb.setDoc(fb.doc(fb.db,'tutors',uid),{
-            name:val('signupTutorName'),school:val('signupTutorSchool'),grade:val('signupTutorGrade'),subject:val('signupTutorSubject'),level:val('signupTutorLevel'),gpa:Number(val('signupTutorGPA')),status:'Pending Interview',verifiedNotes:''
+            name:val('signupTutorName'),school:val('signupTutorSchool'),grade:val('signupTutorGrade'),subject:subjects[0],subjects,level:val('signupTutorLevel'),gpa:Number(val('signupTutorGPA')),status:'Pending Interview',verifiedNotes:''
           });
           await fb.setDoc(fb.doc(fb.db,'tutorPrivate',uid),{email:val('signupTutorEmail'),phone:val('signupTutorPhone'),username:val('signupTutorUsername'),teacherNote:val('signupTutorNote')});
           closeModal('tutorSignupModal');e.target.reset();await loadData();showToast('Application submitted for interview.');
         }catch(e){errorMsg(e);}}
         function updateBookingTutorDropdown(){
-          const subject=val('bookSubject'),select=$('bookTutorSelect'),matches=tutors.filter(t=>t.status==='Approved'&&t.subject===subject);
+          const subject=val('bookSubject'),select=$('bookTutorSelect'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&['IB','AD'].includes(t.level)&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
           select.innerHTML='<option value="AUTO">-- Auto Match Available Tutor --</option>';
           matches.forEach(t=>{const opt=document.createElement('option');opt.value=t.id;opt.textContent=`${t.name} (${t.school}) - ${t.level}`;select.appendChild(opt);});
           $('noTutorAvailableMsg').classList.toggle('hidden',matches.length>0);$('bookSubmitBtn').disabled=!matches.length;
@@ -1190,9 +1209,9 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
             const proceed=confirm('If this is a new account, select OK to register. If you already have an account, select Cancel and check your password.');if(!proceed)return;
             cred=await fb.createUserWithEmailAndPassword(fb.auth,email,password);
           }else throw err;}}
-          const subject=val('bookSubject'),matches=tutors.filter(t=>t.status==='Approved'&&t.subject===subject);
+          const subject=val('bookSubject'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&['IB','AD'].includes(t.level)&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
           const tutorUid=val('bookTutorSelect')==='AUTO'?matches[0]?.id:val('bookTutorSelect');if(!tutorUid)throw Error('No approved tutor available.');
-          await fb.addDoc(fb.collection(fb.db,'bookings'),{studentUid:cred.user.uid,studentName:val('bookStudentName'),studentEmail:email,studentSchool:val('bookStudentSchool'),studentPhone:val('bookStudentPhone'),level:val('bookLevel'),tutorUid,subject,date:val('bookDate'),time:val('bookCustomTime'),format:val('bookFormat'),note:'',status:'Pending'});
+          await fb.addDoc(fb.collection(fb.db,'bookings'),{studentUid:cred.user.uid,studentName:val('bookStudentName'),studentEmail:email,studentSchool:val('bookStudentSchool'),studentGrade:val('bookStudentGrade'),studentPhone:val('bookStudentPhone'),level:val('bookLevel'),tutorUid,subject,date:val('bookDate'),time:val('bookCustomTime'),format:val('bookFormat'),note:'',status:'Pending'});
           closeModal('tuteeBookingModal');e.target.reset();await loadData();showToast('Booking request sent to tutor.');
         }catch(e){errorMsg(e);}}
         async function acceptBooking(id){await changeBooking(id,'Accepted');}
@@ -1211,7 +1230,7 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
 
 function populateSchoolFilter() {
             const filter = document.getElementById('schoolFilter');
-            const schools = Array.from(new Set(tutors.map(t => t.school))).filter(Boolean);
+            const schools = ['AIS'];
             const previous=filter.value; filter.innerHTML = '<option value="All">All Schools</option>'; 
             schools.forEach(s => {
                 const opt = document.createElement('option');
@@ -1227,10 +1246,10 @@ function renderPublicTutors() {
             const subjectVal = document.getElementById('subjectFilter').value;
             const levelVal = document.getElementById('levelFilter').value;
 
-            let filtered = safeTutors().filter(t => t.status === 'Approved');
+            let filtered = safeTutors().filter(t => t.status === 'Approved' && t.school === 'AIS' && ['IB','AD'].includes(t.level));
 
             if (schoolVal !== 'All') filtered = filtered.filter(t => t.school === schoolVal);
-            if (subjectVal !== 'All') filtered = filtered.filter(t => t.subject === subjectVal);
+            if (subjectVal !== 'All') filtered = filtered.filter(t => (Array.isArray(t.subjects)?t.subjects.includes(subjectVal):t.subject === subjectVal));
             if (levelVal !== 'All') filtered = filtered.filter(t => t.level === levelVal);
 
             if (filtered.length === 0) {
@@ -1247,7 +1266,11 @@ function renderPublicTutors() {
                 return;
             }
 
-            grid.innerHTML = filtered.map(t => `
+            grid.innerHTML = filtered.map(t => {
+                const ratings=tutorReviews.filter(r=>r.tutorUid===t.id && Number.isInteger(r.stars) && r.stars>=1 && r.stars<=5);
+                const average=ratings.length?(ratings.reduce((n,r)=>n+r.stars,0)/ratings.length).toFixed(1):null;
+                const reviewHtml=ratings.filter(r=>r.comment).slice(0,3).map(r=>`<p class="text-xs text-slate-600 mt-2 border-t pt-2"><span class="text-amber-500">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span> ${safe(r.comment)}</p>`).join('');
+                return `
                 <div class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between hover:shadow-md transition-shadow">
                     <div>
                         <div class="flex items-start justify-between mb-3">
@@ -1259,20 +1282,22 @@ function renderPublicTutors() {
                         <div class="mt-4 space-y-2 text-xs">
                             <div class="flex justify-between border-b border-slate-100 pb-1.5">
                                 <span class="text-slate-500">Subject</span>
-                                <span class="font-bold text-slate-900">${t.subject}</span>
+                                <span class="font-bold text-slate-900">${safe((t.subjects||[t.subject]).join(', '))}</span>
                             </div>
                             <div class="flex justify-between border-b border-slate-100 pb-1.5">
-                                <span class="text-slate-500">Mastery Level</span>
+                                <span class="text-slate-500">Program</span>
                                 <span class="font-bold text-brand-600">${t.level}</span>
                             </div>
                         </div>
                         ${t.verifiedNotes ? `<p class="mt-3 text-xs bg-slate-50 p-2.5 rounded-xl text-slate-600 italic">"${t.verifiedNotes}"</p>` : ''}
+                        <div class="mt-3 text-xs font-bold text-amber-600">${average ? `★ ${average}/5 (${ratings.length} rating${ratings.length===1?'':'s'})` : 'Not yet rated'}</div>
+                        ${reviewHtml}
                     </div>
                     <button onclick="openModal('tuteeBookingModal')" class="mt-5 w-full bg-slate-900 hover:bg-brand-600 text-white font-bold text-xs py-2.5 rounded-xl transition-colors">
                         Request Session with ${t.name.split(' ')[0]}
                     </button>
                 </div>
-            `).join('');
+            `;}).join('');
         }
 function renderPublicSessionLog() {
             const table = document.getElementById('publicSessionLogTable');
@@ -1319,7 +1344,7 @@ function renderTutorDashboard() {
                     <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
                         <div class="flex justify-between items-start">
                             <div>
-                                <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">${b.studentSchool}</span>
+                                <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">${b.studentSchool} • ${b.studentGrade||'Grade not recorded'}</span>
                                 <h4 class="font-bold text-slate-900 text-sm mt-1">${b.studentName}</h4>
                                 <div class="text-xs text-slate-500">Phone: ${b.studentPhone} • ${b.studentEmail}</div>
                             </div>
@@ -1341,7 +1366,7 @@ function renderTutorDashboard() {
             document.getElementById('tutorApprovedSubjectsList').innerHTML = `
                 <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                     <div>
-                        <span class="font-bold text-slate-900 text-sm">${safeObj(currentLoggedTutor).subject}</span>
+                        <span class="font-bold text-slate-900 text-sm">${safe((currentLoggedTutor.subjects||[currentLoggedTutor.subject]).join(', '))}</span>
                         <div class="text-slate-500 text-[11px]">Badge: ${safeObj(currentLoggedTutor).level}</div>
                     </div>
                     <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Verified</span>
@@ -1373,8 +1398,8 @@ function renderAdminDashboard() {
                             <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Interview Required</span>
                         </div>
                         <div class="text-xs bg-slate-50 p-2.5 rounded-xl space-y-1">
-                            <div><strong>Subject:</strong> ${t.subject}</div>
-                            <div><strong>Claimed Level:</strong> ${t.level}</div>
+                            <div><strong>Subject:</strong> ${safe((t.subjects||[t.subject]).join(', '))}</div>
+                            <div><strong>Claimed Program:</strong> ${t.level}</div>
                             <div><strong>GPA:</strong> ${t.gpa}</div>
                             <div class="italic text-slate-600">"${t.note}"</div>
                         </div>
@@ -1394,7 +1419,7 @@ function renderAdminDashboard() {
                     <tr class="hover:bg-slate-50">
                         <td class="p-3.5">
                             <div class="font-bold text-slate-900">${b.studentName}</div>
-                            <div class="text-[11px] text-slate-500">${b.studentSchool} • ${b.studentPhone}</div>
+                            <div class="text-[11px] text-slate-500">${b.studentSchool} • ${b.studentGrade||'Grade not recorded'} • ${b.studentPhone}</div>
                         </td>
                         <td class="p-3.5">
                             <div class="font-bold text-slate-900">${b.tutorName}</div>
@@ -1424,7 +1449,7 @@ function renderAdminDashboard() {
                         </td>
                         <td class="p-3.5 font-medium text-slate-700">${t.school}</td>
                         <td class="p-3.5">${t.grade} (GPA ${t.gpa})</td>
-                        <td class="p-3.5 font-bold text-brand-600">${t.subject}</td>
+                        <td class="p-3.5 font-bold text-brand-600">${safe((t.subjects||[t.subject]).join(', '))}</td>
                         <td class="p-3.5"><span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">${t.level}</span></td>
                         <td class="p-3.5 italic text-slate-600 text-xs">${t.verifiedNotes || 'Approved via Interview'}</td>
                         <td class="p-3.5 text-right">
@@ -1444,7 +1469,7 @@ function openInterviewModal(id) {
             document.getElementById('intModalPhone').innerText = tutor.phone;
             document.getElementById('intModalEmail').innerText = tutor.email;
             document.getElementById('intModalGpa').innerText = `${tutor.gpa} (${tutor.grade})`;
-            document.getElementById('intModalSubject').innerText = tutor.subject;
+            document.getElementById('intModalSubject').innerText = (tutor.subjects||[tutor.subject]).join(', ');
             document.getElementById('intModalNote').innerText = tutor.note;
             document.getElementById('intVerifiedLevel').value = tutor.level;
 
@@ -1453,11 +1478,11 @@ function openInterviewModal(id) {
 function updateStats() {
             const approved = tutors.filter(t => t.status === 'Approved');
             const pending = tutors.filter(t => t.status === 'Pending Interview');
-            const schoolsCount = new Set(tutors.map(t => t.school)).size;
+            const schoolsCount = 1;
 
             document.getElementById('statApprovedCount').innerText = `${approved.length} Verified`;
             document.getElementById('statPendingCount').innerText = isAdminLoggedIn ? `${pending.length} Pending` : "—";
-            document.getElementById('statSchoolCount').innerText = schoolsCount > 0 ? `${schoolsCount} Schools` : 'Multi-School';
+            document.getElementById('statSchoolCount').innerText = 'AIS';
             document.getElementById('navPendingBadge').innerText = isAdminLoggedIn ? pending.length : "";
         }
 
@@ -1471,12 +1496,45 @@ function updateStats() {
             const x=pendingSessions.find(x=>x.id===id);if(!x)return;
             const batch=fb.writeBatch(fb.db);
             batch.update(fb.doc(fb.db,'sessions',id),{status:approve?'Verified':'Rejected'});
+            if(approve)batch.update(fb.doc(fb.db,'bookings',x.bookingId),{reviewEligible:true});
             if(approve)batch.set(fb.doc(fb.db,'publicSessions',id),{date:x.date||'',tutorName:x.tutorName||'',tutorSchool:x.tutorSchool||'',tuteeName:'Student',subject:x.subject||'',format:x.format||'',hours:x.hours||0});
             await batch.commit();await loadData();showToast(approve?'Hours verified.':'Hours rejected.');
           }catch(e){errorMsg(e);}
         }
 
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours});
+        async function findReviewBookings(){
+          if(!fb)return showToast('Firebase is still loading.');
+          try{
+            const email=val('reviewEmail'),password=val('reviewPassword');
+            if(!email||!password)throw Error('Enter your booking email and password.');
+            if(fb.auth.currentUser?.email!==email){
+              if(fb.auth.currentUser)await fb.signOut(fb.auth);
+              await fb.signInWithEmailAndPassword(fb.auth,email,password);
+            }
+            const snap=await fb.getDocs(fb.query(fb.collection(fb.db,'bookings'),fb.where('studentUid','==',fb.auth.currentUser.uid)));
+            const eligible=snap.docs.filter(d=>d.data().reviewEligible===true);
+            const select=$('reviewBooking');select.innerHTML='<option value="">Choose a verified session</option>';
+            for(const d of eligible){
+              const existing=await fb.getDoc(fb.doc(fb.db,'reviews',d.id));
+              if(existing.exists())continue;
+              const opt=document.createElement('option');opt.value=d.id;opt.textContent=`${d.data().subject} — ${d.data().date} (${d.data().time})`;select.appendChild(opt);
+            }
+            if(select.options.length===1)showToast('No verified, unreviewed sessions found for this account.');
+          }catch(e){errorMsg(e);}
+        }
+        async function submitTutorReview(e){
+          e.preventDefault();if(!fb)return;
+          try{
+            const bookingId=val('reviewBooking'),stars=Number(val('reviewStars')),comment=val('reviewComment');
+            if(!bookingId||!Number.isInteger(stars)||stars<1||stars>5)throw Error('Select a completed session and 1–5 stars.');
+            if(comment.length>500)throw Error('Review must be 500 characters or fewer.');
+            const booking=await fb.getDoc(fb.doc(fb.db,'bookings',bookingId));
+            if(!booking.exists()||booking.data().studentUid!==fb.auth.currentUser?.uid||booking.data().reviewEligible!==true)throw Error('Only the student who completed a verified session can review it.');
+            await fb.setDoc(fb.doc(fb.db,'reviews',bookingId),{studentUid:fb.auth.currentUser.uid,tutorUid:booking.data().tutorUid,stars,comment});
+            closeModal('reviewModal');e.target.reset();await loadData();showToast('Thank you! Your review has been posted.');
+          }catch(e){errorMsg(e);}
+        }
+        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview});
     </script>
 </body>
 </html>
