@@ -1084,8 +1084,13 @@
                 pendingSessions=ss.docs.map(d=>({id:d.id,...d.data()}));
               } else pendingSessions=[];
             }
-            const reviewSnap=await fb.getDocs(fb.collection(fb.db,'reviews'));
-            tutorReviews=reviewSnap.docs.map(d=>({id:d.id,...d.data()}));
+            try {
+              const reviewSnap=await fb.getDocs(fb.collection(fb.db,'reviews'));
+              tutorReviews=reviewSnap.docs.map(d=>({id:d.id,...d.data()}));
+            } catch(reviewError) {
+              console.warn('Reviews temporarily unavailable; tutor directory remains accessible.',reviewError);
+              tutorReviews=[];
+            }
             const publicLogs=await fb.getDocs(fb.collection(fb.db,'publicSessions'));
             completedSessions=publicLogs.docs.map(d=>({id:d.id,...d.data()}));
             if(currentLoggedTutor)currentLoggedTutor=tutors.find(t=>t.id===user?.uid)||currentLoggedTutor;
@@ -1255,7 +1260,7 @@ function renderPublicTutors() {
             const subjectVal = document.getElementById('subjectFilter').value;
             const levelVal = document.getElementById('levelFilter').value;
 
-            let filtered = safeTutors().filter(t => t.status === 'Approved' && t.school === 'AIS' && ['IB','AD'].includes(t.level));
+            let filtered = safeTutors().filter(t => t.status === 'Approved'); // Preserve previously approved tutor profiles
 
             if (schoolVal !== 'All') filtered = filtered.filter(t => t.school === schoolVal);
             if (subjectVal !== 'All') filtered = filtered.filter(t => (Array.isArray(t.subjects)?t.subjects.includes(subjectVal):t.subject === subjectVal));
