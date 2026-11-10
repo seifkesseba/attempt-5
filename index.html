@@ -488,6 +488,13 @@
                             </div>
                             <p id="mySubjectRequestStatus" class="text-xs text-amber-700 mt-3"></p>
                             <button onclick="openEditSubjects()" class="mt-4 bg-indigo-600 text-white rounded-xl px-4 py-2 text-xs font-bold">Edit My Subjects</button>
+                            <div class="mt-5 pt-4 border-t border-slate-200">
+                              <label class="flex gap-3 items-start text-xs text-slate-700 cursor-pointer">
+                                <input id="tutorGpaPublicCheckbox" type="checkbox" onchange="setGpaVisibility(this.checked)" class="h-4 w-4 accent-indigo-600 mt-0.5">
+                                <span><strong>Show my GPA on my public tutor profile</strong><span class="block text-slate-500 mt-1">Off by default. Only check this if you want students to see your GPA. You can turn it off at any time.</span></span>
+                              </label>
+                              <p id="tutorGpaVisibilityStatus" class="text-xs text-slate-500 mt-2" aria-live="polite"></p>
+                            </div>
                         </div>
 
                         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -582,7 +589,8 @@
                         </h2>
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left text-xs sm:text-sm text-slate-600">
+                                <div class="mb-4 p-3 rounded-xl border border-amber-200 bg-amber-50 text-sm"><strong>GPA Privacy Migration</strong><p class="text-xs mt-1 mb-2">One-time action: move GPA from existing public tutor records into Head Admin-only storage. Run this after publishing the new security rules. This will not delete tutor accounts or bookings.</p><button type="button" onclick="migrateTutorGpa()" class="px-4 py-2 rounded-lg bg-amber-600 text-white text-xs font-bold">Secure Existing Tutor GPAs</button></div>
+<table class="w-full text-left text-xs sm:text-sm text-slate-600">
                                     <thead class="bg-slate-100 text-slate-700 text-xs font-bold uppercase">
                                         <tr>
                                             <th class="p-3.5">Tutor Name & Phone</th>
@@ -1087,10 +1095,13 @@
             let pending=[];
             if(isAdminLoggedIn){const snap=await fb.getDocs(fb.collection(fb.db,'tutors'));pending=snap.docs.filter(d=>d.data().status==='Pending Interview').map(d=>({id:d.id,...d.data(),note:d.data().teacherNote||'',phone:'',email:''}));}
             tutors=[...approved,...pending];
+            if(!isAdminLoggedIn)tutors=tutors.map(({gpa,...t})=>t);
             if(isAdminLoggedIn){
               const priv=await fb.getDocs(fb.collection(fb.db,'tutorPrivate'));
               const privateById=new Map(priv.docs.map(d=>[d.id,d.data()]));
-              tutors=tutors.map(t=>({...t,...(privateById.get(t.id)||{}),note:privateById.get(t.id)?.teacherNote||''}));
+              const gpaSnap=await fb.getDocs(fb.collection(fb.db,'tutorGpaPrivate'));
+              const gpaById=new Map(gpaSnap.docs.map(d=>[d.id,d.data().gpa]));
+              tutors=tutors.map(t=>({...t,...(privateById.get(t.id)||{}),gpa:gpaById.get(t.id)??t.gpa??null,note:privateById.get(t.id)?.teacherNote||''}));
             }
             subjectRequests=[];
             if(isAdminLoggedIn){
@@ -1228,10 +1239,15 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
           if(!['8th Grade','9th Grade','10th Grade','11th Grade','12th Grade'].includes(val('signupTutorGrade')))throw Error('Tutors must be in Grade 8 or higher.');
           const credential=await fb.createUserWithEmailAndPassword(fb.auth,val('signupTutorEmail'),val('signupTutorPassword'));
           const uid=credential.user.uid;
-          await fb.setDoc(fb.doc(fb.db,'tutors',uid),{
-            name:val('signupTutorName'),school:val('signupTutorSchool'),grade:val('signupTutorGrade'),subject:subjects[0],subjects,level:val('signupTutorLevel'),gpa:Number(val('signupTutorGPA')),status:'Pending Interview',verifiedNotes:''
+          const gpa=Number(val('signupTutorGPA'));
+          if(!Number.isFinite(gpa)||gpa<0||gpa>4.3)throw Error('Enter a valid GPA between 0 and 4.3.');
+          const registration=fb.writeBatch(fb.db);
+          registration.set(fb.doc(fb.db,'tutors',uid),{
+            name:val('signupTutorName'),school:val('signupTutorSchool'),grade:val('signupTutorGrade'),subject:subjects[0],subjects,level:val('signupTutorLevel'),status:'Pending Interview',verifiedNotes:''
           });
-          await fb.setDoc(fb.doc(fb.db,'tutorPrivate',uid),{email:val('signupTutorEmail'),phone:val('signupTutorPhone'),username:val('signupTutorUsername'),teacherNote:val('signupTutorNote')});
+          registration.set(fb.doc(fb.db,'tutorPrivate',uid),{email:val('signupTutorEmail'),phone:val('signupTutorPhone'),username:val('signupTutorUsername'),teacherNote:val('signupTutorNote')});
+          registration.set(fb.doc(fb.db,'tutorGpaPrivate',uid),{gpa});
+          await registration.commit();
           closeModal('tutorSignupModal');e.target.reset();updateTutorSubjectSelection();await loadData();showToast('Application submitted for interview.');
         }catch(e){errorMsg(e);}}
         function updateBookingTutorDropdown(){
@@ -1317,7 +1333,7 @@ function renderPublicTutors() {
                             <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-check me-1"></i>Verified</span>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900">${t.name}</h3>
-                        <div class="text-xs text-slate-500 mt-0.5">${t.grade} • GPA ${t.gpa}</div>
+                        <div class="text-xs text-slate-500 mt-0.5">${safe(t.grade)}${typeof t.publicGpa==='number' ? ` • GPA ${t.publicGpa.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}` : ''}</div>
                         <div class="mt-4 space-y-2 text-xs">
                             <div class="flex justify-between border-b border-slate-100 pb-1.5">
                                 <span class="text-slate-500">Subject</span>
@@ -1366,6 +1382,10 @@ function renderTutorDashboard() {
             document.getElementById('tutorPortalSchool').innerText = safeObj(currentLoggedTutor).school;
             document.getElementById('tutorPortalPhone').innerText = 'Private';
             document.getElementById('tutorPortalGrade').innerText = safeObj(currentLoggedTutor).grade;
+            const gpaCheck=$('tutorGpaPublicCheckbox');
+            if(gpaCheck)gpaCheck.checked=typeof currentLoggedTutor.publicGpa==='number';
+            const gpaStatus=$('tutorGpaVisibilityStatus');
+            if(gpaStatus)gpaStatus.textContent=gpaCheck?.checked?'Your GPA is publicly visible.':'Your GPA is private.';
 
             const myRequests = safeBookings().filter(b => b.tutorId === currentLoggedTutor.id && b.status === 'Pending');
             document.getElementById('tutorPendingRequestsBadge').innerText = `${myRequests.length} Pending`;
@@ -1624,7 +1644,47 @@ function updateStats() {
             await batch.commit();await loadData();showToast(approve?'Subject changes approved.':'Subject request rejected.');
           }catch(err){errorMsg(err);}
         }
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest});
+        async function setGpaVisibility(visible){
+          const box=$('tutorGpaPublicCheckbox');
+          if(!fb||!currentLoggedTutor||!fb.auth.currentUser){if(box)box.checked=!visible;return;}
+          if(box)box.disabled=true;
+          try{
+            const ref=fb.doc(fb.db,'tutors',currentLoggedTutor.id);
+            if(visible){
+              const snap=await fb.getDoc(fb.doc(fb.db,'tutorGpaPrivate',currentLoggedTutor.id));
+              if(!snap.exists()||typeof snap.data().gpa!=='number')throw Error('Your private GPA is not ready. Ask the Head Admin to complete the GPA migration first.');
+              await fb.updateDoc(ref,{publicGpa:snap.data().gpa});
+            }else{
+              await fb.updateDoc(ref,{publicGpa:fb.deleteField()});
+            }
+            const updated=await fb.getDoc(ref);
+            currentLoggedTutor={id:updated.id,...updated.data(),email:fb.auth.currentUser.email,phone:''};
+            await loadData();
+            showToast(visible?'Your GPA is now public.':'Your GPA is now private.');
+          }catch(e){if(box)box.checked=!visible;errorMsg(e);}
+          finally{if(box)box.disabled=false;}
+        }
+        async function migrateTutorGpa(){
+          if(!isAdminLoggedIn||fb.auth.currentUser?.uid!==ADMIN_UID)return showToast('Head Admin login required.');
+          if(!confirm('Move GPA from all existing tutor records into private admin-only storage? Make sure your database backup is saved.'))return;
+          try{
+            const snap=await fb.getDocs(fb.collection(fb.db,'tutors'));
+            let migrated=0;
+            for(const d of snap.docs){
+              if(!Object.prototype.hasOwnProperty.call(d.data(),'gpa'))continue;
+              const gpa=d.data().gpa;
+              if(typeof gpa!=='number'||gpa<0||gpa>4.3)throw Error('Invalid GPA in tutor record '+d.id+'. Migration stopped.');
+              const batch=fb.writeBatch(fb.db);
+              batch.set(fb.doc(fb.db,'tutorGpaPrivate',d.id),{gpa});
+              batch.update(d.ref,{gpa:fb.deleteField()});
+              await batch.commit();
+              migrated++;
+            }
+            await loadData();
+            showToast(migrated?`Secured ${migrated} tutor GPA record(s).`:'No legacy public GPA fields remain.');
+          }catch(e){errorMsg(e);}
+        }
+        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
     </script>
 </body>
 </html>
