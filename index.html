@@ -685,8 +685,8 @@
                         <input type="text" id="signupTutorUsername" required placeholder="e.g. maya_math24" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Set Account Password *</label>
-                        <input type="password" id="signupTutorPassword" required placeholder="••••••••" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Create Tutor Portal Password *</label>
+                        <input type="password" id="signupTutorPassword" minlength="6" autocomplete="new-password" required placeholder="At least 6 characters" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500"><p class="text-xs text-slate-500 mt-1">Use this password with your email to log in after approval.</p>
                     </div>
                 </div>
 
@@ -696,24 +696,25 @@
                         <input type="number" step="0.01" min="3.0" max="4.0" id="signupTutorGPA" required placeholder="e.g. 3.92" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Subjects to Teach (select 1–4) *</label><p class="text-xs text-slate-500 mb-2">Hold Ctrl (Windows) or Command (Mac) to select multiple subjects.</p>
-                        <select id="signupTutorSubject" multiple size="7" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
-                            <option value="Math">Math</option>
-                            <option value="Physics">Physics</option>
-                            <option value="Chemistry">Chemistry</option>
-                            <option value="MUN">MUN (Model United Nations)</option>
-                            <option value="Art">Art (All Kinds)</option>
-                            <option value="English">English</option>
-                            <option value="History">History</option>
-                            <option value="Global Issues">Global Issues</option>
-                            <option value="Arabic">Arabic</option>
-                            <option value="Arabic Identity">Arabic Identity</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
-                            <option value="Business">Business</option>
-                            <option value="Economics">Economics</option>
-                            <option value="Psychology">Psychology</option>
-                        </select>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Subjects to Teach (choose up to 4) *</label>
+<p id="subjectSelectionCount" class="text-xs text-slate-500 mb-2" aria-live="polite">0 of 4 selected — choose at least 1.</p>
+<div id="signupTutorSubjects" class="max-h-52 overflow-y-auto border border-slate-300 rounded-xl p-3 grid grid-cols-1 gap-2" role="group" aria-label="Subjects to teach">
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Math" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Math</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Physics" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Physics</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Chemistry" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Chemistry</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="MUN" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> MUN (Model United Nations)</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Art" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Art (All Kinds)</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="English" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> English</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="History" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> History</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Global Issues" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Global Issues</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Arabic" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Arabic</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Arabic Identity" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Arabic Identity</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Spanish" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Spanish</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="French" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> French</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Business" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Business</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Economics" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Economics</label>
+<label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="tutorSubject" value="Psychology" onchange="updateTutorSubjectSelection(this)" class="h-4 w-4 accent-indigo-600"> Psychology</label>
+</div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Program *</label>
@@ -1182,9 +1183,17 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
         function openTutorLoginModal(){if(currentLoggedTutor)switchPortal('tutor');else openModal('tutorLoginModal');}
         async function handleTutorLogin(e){e.preventDefault();if(!fb)return;try{await fb.signInWithEmailAndPassword(fb.auth,val('loginTutorUsername'),val('loginTutorPassword'));const snap=await fb.getDoc(fb.doc(fb.db,'tutors',fb.auth.currentUser.uid));if(!snap.exists()||snap.data().status!=='Approved'){showToast('Account pending interview approval.');return;}currentLoggedTutor={id:snap.id,...snap.data(),phone:'',email:fb.auth.currentUser.email};closeModal('tutorLoginModal');await loadData();switchPortal('tutor');}catch(e){errorMsg(e);}}
         async function logoutTutor(){await fb.signOut(fb.auth);currentLoggedTutor=null;switchPortal('public');}
+        function updateTutorSubjectSelection(changed){
+          const boxes=[...document.querySelectorAll('input[name="tutorSubject"]')];
+          const checked=boxes.filter(x=>x.checked);
+          if(checked.length>4){changed.checked=false;showToast('You can select a maximum of 4 subjects.');}
+          const count=boxes.filter(x=>x.checked).length;
+          $('subjectSelectionCount').textContent=`${count} of 4 selected${count===0?' — choose at least 1.':''}`;
+          boxes.forEach(x=>x.disabled=!x.checked&&count>=4);
+        }
         async function handleTutorSignUp(e){e.preventDefault();if(!fb)return;try{
           if(fb.auth.currentUser && !confirm('Creating a tutor account will sign out the current account. Continue?'))return;
-          const subjects=[...$('signupTutorSubject').selectedOptions].map(o=>o.value);
+          const subjects=[...document.querySelectorAll('input[name="tutorSubject"]:checked')].map(o=>o.value);
           if(subjects.length<1||subjects.length>4)throw Error('Please select between 1 and 4 subjects.');
           if(!['8th Grade','9th Grade','10th Grade','11th Grade','12th Grade'].includes(val('signupTutorGrade')))throw Error('Tutors must be in Grade 8 or higher.');
           const credential=await fb.createUserWithEmailAndPassword(fb.auth,val('signupTutorEmail'),val('signupTutorPassword'));
@@ -1193,7 +1202,7 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
             name:val('signupTutorName'),school:val('signupTutorSchool'),grade:val('signupTutorGrade'),subject:subjects[0],subjects,level:val('signupTutorLevel'),gpa:Number(val('signupTutorGPA')),status:'Pending Interview',verifiedNotes:''
           });
           await fb.setDoc(fb.doc(fb.db,'tutorPrivate',uid),{email:val('signupTutorEmail'),phone:val('signupTutorPhone'),username:val('signupTutorUsername'),teacherNote:val('signupTutorNote')});
-          closeModal('tutorSignupModal');e.target.reset();await loadData();showToast('Application submitted for interview.');
+          closeModal('tutorSignupModal');e.target.reset();updateTutorSubjectSelection();await loadData();showToast('Application submitted for interview.');
         }catch(e){errorMsg(e);}}
         function updateBookingTutorDropdown(){
           const subject=val('bookSubject'),select=$('bookTutorSelect'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&['IB','AD'].includes(t.level)&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
@@ -1534,7 +1543,7 @@ function updateStats() {
             closeModal('reviewModal');e.target.reset();await loadData();showToast('Thank you! Your review has been posted.');
           }catch(e){errorMsg(e);}
         }
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview});
+        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection});
     </script>
 </body>
 </html>
