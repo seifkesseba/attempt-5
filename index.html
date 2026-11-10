@@ -486,6 +486,8 @@
                             <div id="tutorApprovedSubjectsList" class="space-y-2 text-xs">
                                 <!-- Injected by JS -->
                             </div>
+                            <p id="mySubjectRequestStatus" class="text-xs text-amber-700 mt-3"></p>
+                            <button onclick="openEditSubjects()" class="mt-4 bg-indigo-600 text-white rounded-xl px-4 py-2 text-xs font-bold">Edit My Subjects</button>
                         </div>
 
                         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -570,6 +572,9 @@
                     <div><h2 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-clock text-emerald-600"></i> Hours Awaiting Verification</h2>
                     <div id="adminHoursQueue" class="grid md:grid-cols-2 gap-4"></div></div>
 
+                    <div><h2 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-list-check text-indigo-600"></i> Subject Change Requests</h2>
+                      <div id="adminSubjectRequests" class="grid md:grid-cols-2 gap-4"></div>
+                    </div>
                     <!-- Approved Tutors Management Table -->
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -1032,6 +1037,18 @@
         </form>
       </div>
     </div>
+<div id="editSubjectsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <button onclick="closeModal('editSubjectsModal')" class="absolute right-5 top-5 text-slate-500" aria-label="Close">✕</button>
+    <h3 class="text-xl font-extrabold text-slate-900 mb-2">Edit My Subjects</h3>
+    <p class="text-xs text-slate-600 mb-4">Choose 1 to 4 subjects. Your current approved subjects remain active while the Head Admin reviews your request.</p>
+    <form onsubmit="submitSubjectRequest(event)">
+      <p id="editSubjectCount" class="text-xs text-indigo-700 font-bold mb-2" aria-live="polite"></p>
+      <div class="grid grid-cols-2 gap-3 border rounded-xl p-3 max-h-72 overflow-y-auto"><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Math" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Math</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Physics" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Physics</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Chemistry" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Chemistry</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="MUN" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> MUN (Model United Nations)</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Art" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Art (All Kinds)</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="English" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> English</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="History" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> History</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Global Issues" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Global Issues</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Arabic" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Arabic</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Arabic Identity" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Arabic Identity</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Spanish" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Spanish</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="French" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> French</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Business" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Business</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Economics" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Economics</label><label class="flex items-center gap-2 text-sm"><input type="checkbox" name="editTutorSubject" value="Psychology" onchange="updateEditSubjectCount(this)" class="h-4 w-4 accent-indigo-600"> Psychology</label></div>
+      <button type="submit" class="mt-5 w-full bg-indigo-600 text-white font-bold rounded-xl py-3">Submit for Approval</button>
+    </form>
+  </div>
+</div>
     <!-- Toast Notification Popup -->
     <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 transition-all duration-300 opacity-0 pointer-events-none z-50">
         <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
@@ -1053,14 +1070,14 @@
         };
         const ADMIN_UID = 'oET89CIafkX2tCM5zpSvjHm01a33';
         let tutors=[], bookingRequests=[], completedSessions=[], currentLoggedTutor=null, isAdminLoggedIn=false;
-        let fb=null, user=null, pendingSessions=[], tutorReviews=[];
+        let fb=null, user=null, pendingSessions=[], tutorReviews=[], subjectRequests=[];
         const $=id=>document.getElementById(id);
         const val=id=>$(id).value.trim();
         const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         const safeObj=o=>Object.fromEntries(Object.entries(o||{}).map(([k,v])=>[k,typeof v==='string'?safe(v):v]));
         const safeTutors=()=>tutors.map(safeObj),safeBookings=()=>bookingRequests.map(safeObj),safeSessions=()=>completedSessions.map(safeObj);
         const errorMsg=e=>{console.error(e);showToast(e?.message||'Something went wrong.','fa-circle-xmark text-rose-400');};
-        const refresh=()=>{populateSchoolFilter();renderPublicTutors();renderPublicSessionLog();updateStats();if(currentLoggedTutor)renderTutorDashboard();if(isAdminLoggedIn){renderAdminDashboard();renderHoursQueue();}};
+        const refresh=()=>{populateSchoolFilter();renderPublicTutors();renderPublicSessionLog();updateStats();if(currentLoggedTutor)renderTutorDashboard();if(isAdminLoggedIn){renderAdminDashboard();renderHoursQueue();renderSubjectRequests();}};
         async function loadData(){
           if(!fb)return;
           try {
@@ -1074,6 +1091,14 @@
               const priv=await fb.getDocs(fb.collection(fb.db,'tutorPrivate'));
               const privateById=new Map(priv.docs.map(d=>[d.id,d.data()]));
               tutors=tutors.map(t=>({...t,...(privateById.get(t.id)||{}),note:privateById.get(t.id)?.teacherNote||''}));
+            }
+            subjectRequests=[];
+            if(isAdminLoggedIn){
+              const sr=await fb.getDocs(fb.collection(fb.db,'subjectRequests'));
+              subjectRequests=sr.docs.map(d=>({id:d.id,...d.data()}));
+            }else if(currentLoggedTutor){
+              const sr=await fb.getDoc(fb.doc(fb.db,'subjectRequests',currentLoggedTutor.id));
+              if(sr.exists())subjectRequests=[{id:sr.id,...sr.data()}];
             }
             bookingRequests=[];
             if(user){
@@ -1377,6 +1402,8 @@ function renderTutorDashboard() {
                 `).join('');
             }
 
+            const mySubjectRequest=subjectRequests.find(r=>r.id===currentLoggedTutor.id);
+            $('mySubjectRequestStatus').textContent=mySubjectRequest?.status==='Pending'?'Subject change request awaiting Head Admin approval.':mySubjectRequest?.status==='Rejected'?'Your last subject change request was rejected. You may submit a new one.':'';
             document.getElementById('tutorApprovedSubjectsList').innerHTML = `
                 <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                     <div>
@@ -1548,7 +1575,56 @@ function updateStats() {
             closeModal('reviewModal');e.target.reset();await loadData();showToast('Thank you! Your review has been posted.');
           }catch(e){errorMsg(e);}
         }
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection});
+        function approvedSubjectNames(t){return Array.isArray(t.subjects)&&t.subjects.length?t.subjects:[t.subject].filter(Boolean);}
+        function updateEditSubjectCount(changed){
+          const boxes=[...document.querySelectorAll('input[name="editTutorSubject"]')];
+          let chosen=boxes.filter(x=>x.checked);
+          if(chosen.length>4&&changed){changed.checked=false;chosen=boxes.filter(x=>x.checked);showToast('Maximum 4 subjects.');}
+          boxes.forEach(x=>x.disabled=!x.checked&&chosen.length>=4);
+          $('editSubjectCount').textContent=`${chosen.length} of 4 selected (minimum 1)`;
+        }
+        function openEditSubjects(){
+          if(!currentLoggedTutor)return showToast('Log in as an approved tutor first.');
+          if(subjectRequests.some(r=>r.id===currentLoggedTutor.id&&r.status==='Pending'))return showToast('You already have a request awaiting approval.');
+          const selected=approvedSubjectNames(currentLoggedTutor);
+          document.querySelectorAll('input[name="editTutorSubject"]').forEach(x=>{x.checked=selected.includes(x.value);x.disabled=false;});
+          updateEditSubjectCount();openModal('editSubjectsModal');
+        }
+        async function submitSubjectRequest(e){
+          e.preventDefault();
+          if(!fb||!currentLoggedTutor||user?.uid!==currentLoggedTutor.id)return showToast('Please log in as a tutor.');
+          const subjects=[...document.querySelectorAll('input[name="editTutorSubject"]:checked')].map(x=>x.value);
+          if(subjects.length<1||subjects.length>4||new Set(subjects).size!==subjects.length)return showToast('Choose 1 to 4 different subjects.');
+          if(JSON.stringify(subjects.slice().sort())===JSON.stringify(approvedSubjectNames(currentLoggedTutor).slice().sort()))return showToast('Please change your subject selection first.');
+          try{
+            await fb.setDoc(fb.doc(fb.db,'subjectRequests',currentLoggedTutor.id),{tutorUid:currentLoggedTutor.id,subjects,status:'Pending'});
+            closeModal('editSubjectsModal');await loadData();showToast('Your subject request was sent to the Head Admin.');
+          }catch(err){errorMsg(err);}
+        }
+        function renderSubjectRequests(){
+          const el=$('adminSubjectRequests');if(!el)return;
+          const pending=subjectRequests.filter(r=>r.status==='Pending');
+          el.innerHTML=pending.length?pending.map(r=>{
+            const tutor=tutors.find(t=>t.id===r.id);
+            return `<div class="bg-white border border-slate-200 rounded-xl p-4"><p class="font-bold text-sm">${safe(tutor?.name||'Tutor')}</p><p class="text-xs text-slate-500 mt-1">Currently approved: ${safe(approvedSubjectNames(tutor||{}).join(', '))}</p><p class="text-xs mt-2"><strong>Requested:</strong> ${safe((r.subjects||[]).join(', '))}</p><div class="flex gap-2 mt-3"><button onclick="decideSubjectRequest('${r.id}',true)" class="bg-emerald-600 text-white rounded-lg px-4 py-2 text-xs">Approve</button><button onclick="decideSubjectRequest('${r.id}',false)" class="bg-rose-100 text-rose-700 rounded-lg px-4 py-2 text-xs">Reject</button></div></div>`;
+          }).join(''):'<p class="text-sm text-slate-500">No pending subject changes.</p>';
+        }
+        async function decideSubjectRequest(uid,approve){
+          if(!isAdminLoggedIn||user?.uid!==ADMIN_UID)return showToast('Head Admin access required.');
+          try{
+            const ref=fb.doc(fb.db,'subjectRequests',uid);
+            const snap=await fb.getDoc(ref);
+            if(!snap.exists()||snap.data().status!=='Pending')throw Error('This request is no longer pending.');
+            const requested=snap.data().subjects;
+            const tutorSnap=await fb.getDoc(fb.doc(fb.db,'tutors',uid));
+            if(!tutorSnap.exists()||tutorSnap.data().status!=='Approved')throw Error('Tutor is not approved.');
+            const batch=fb.writeBatch(fb.db);
+            if(approve)batch.update(fb.doc(fb.db,'tutors',uid),{subjects:requested,subject:requested[0]});
+            batch.update(ref,{status:approve?'Approved':'Rejected'});
+            await batch.commit();await loadData();showToast(approve?'Subject changes approved.':'Subject request rejected.');
+          }catch(err){errorMsg(err);}
+        }
+        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest});
     </script>
 </body>
 </html>
