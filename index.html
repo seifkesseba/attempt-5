@@ -807,7 +807,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Subject *</label>
-                        <select id="bookSubject" onchange="updateBookingTutorDropdown()" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <select id="bookSubject" onchange="updateBookingLessonOptions();updateBookingTutorDropdown()" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                             <option value="Math">Math</option>
                             <option value="Physics">Physics</option>
                             <option value="Chemistry">Chemistry</option>
@@ -827,11 +827,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Required Program *</label>
-                        <select id="bookLevel" onchange="updateBookingTutorDropdown()" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
+                        <select id="bookLevel" onchange="updateBookingLessonOptions();updateBookingTutorDropdown()" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-brand-500 focus:border-brand-500">
                             <option value="IB">IB</option>
                             <option value="AD">AD</option>
                         </select>
                     </div>
+                </div>
+                <div id="bookLessonVariantWrap" class="hidden">
+                    <label id="bookLessonVariantLabel" for="bookLessonVariant" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Course Level *</label>
+                    <select id="bookLessonVariant" class="w-full border border-slate-300 rounded-xl p-3 text-sm" aria-label="Course level"></select>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -1203,6 +1207,7 @@ function switchPortal(portal) {
 
         // Modal Controls
 function openModal(modalId) {
+            if (modalId === 'tuteeBookingModal') updateBookingLessonOptions();
             document.getElementById(modalId).classList.remove('hidden');
             document.body.classList.add('modal-active');
             if (modalId === 'logHoursModal') { const select=$('logBookingId');select.innerHTML='<option value="">Select accepted booking</option>';bookingRequests.filter(b=>b.tutorUid===user?.uid&&b.status==='Accepted').forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=`${b.studentName} — ${b.date} ${b.time}`;select.appendChild(o);}); }
@@ -1265,6 +1270,29 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
         function tutorMatchesProgram(t, program) {
           return t.level === program || ['Advanced Level', 'AP / IB Mastery'].includes(t.level);
         }
+        // Course choice affects the booking label, never tutor eligibility.
+        function updateBookingLessonOptions(){
+          const program=val('bookLevel'),subject=val('bookSubject');
+          const wrap=$('bookLessonVariantWrap'),select=$('bookLessonVariant');
+          const previous=select.value;
+          let options=[];
+          if(program==='IB')options=['SL','HL'];
+          else if(program==='AD' && (subject==='Physics'||subject==='Chemistry'))options=[subject,`Advanced ${subject}`];
+          wrap.classList.toggle('hidden',options.length===0);
+          select.required=options.length>0;
+          $('bookLessonVariantLabel').textContent=program==='IB'?'IB Course Level *':`${subject} Course *`;
+          select.innerHTML='';
+          options.forEach(value=>{const opt=document.createElement('option');opt.value=value;opt.textContent=value;select.appendChild(opt);});
+          if(options.includes(previous))select.value=previous;
+        }
+        function bookingSubjectLabel(subject,program,variant){
+          if(program==='IB' && ['SL','HL'].includes(variant))return `${subject} ${variant}`;
+          if(program==='AD' && ['Physics','Chemistry'].includes(subject) && [subject,`Advanced ${subject}`].includes(variant))return variant;
+          return subject;
+        }
+        function bookingDisplaySubject(b){
+          return b.courseLabel || bookingSubjectLabel(b.subject,b.level,b.courseVariant);
+        }
         function updateBookingTutorDropdown(){
           const subject=val('bookSubject'),select=$('bookTutorSelect'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&tutorMatchesProgram(t,val('bookLevel'))&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
           select.innerHTML='<option value="AUTO">-- Auto Match Available Tutor --</option>';
@@ -1279,9 +1307,9 @@ function showToast(msg, icon = 'fa-circle-check text-emerald-400') {
             const proceed=confirm('If this is a new account, select OK to register. If you already have an account, select Cancel and check your password.');if(!proceed)return;
             cred=await fb.createUserWithEmailAndPassword(fb.auth,email,password);
           }else throw err;}}
-          const subject=val('bookSubject'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&tutorMatchesProgram(t,val('bookLevel'))&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
+          const subject=val('bookSubject'),program=val('bookLevel'),variant=val('bookLessonVariant'),matches=tutors.filter(t=>t.status==='Approved'&&t.school==='AIS'&&tutorMatchesProgram(t,program)&&(Array.isArray(t.subjects)?t.subjects.includes(subject):t.subject===subject));
           const tutorUid=val('bookTutorSelect')==='AUTO'?matches[0]?.id:val('bookTutorSelect');if(!tutorUid)throw Error('No approved tutor available.');
-          await fb.addDoc(fb.collection(fb.db,'bookings'),{studentUid:cred.user.uid,studentName:val('bookStudentName'),studentEmail:email,studentSchool:val('bookStudentSchool'),studentGrade:val('bookStudentGrade'),studentPhone:val('bookStudentPhone'),level:val('bookLevel'),tutorUid,subject,date:val('bookDate'),time:val('bookCustomTime'),format:val('bookFormat'),note:'',status:'Pending'});
+          await fb.addDoc(fb.collection(fb.db,'bookings'),{studentUid:cred.user.uid,studentName:val('bookStudentName'),studentEmail:email,studentSchool:val('bookStudentSchool'),studentGrade:val('bookStudentGrade'),studentPhone:val('bookStudentPhone'),level:program,tutorUid,subject,courseVariant:(program==='IB'||(program==='AD'&&['Physics','Chemistry'].includes(subject)))?variant:'',courseLabel:bookingSubjectLabel(subject,program,variant),date:val('bookDate'),time:val('bookCustomTime'),format:val('bookFormat'),note:'',status:'Pending'});
           closeModal('tuteeBookingModal');e.target.reset();await loadData();showToast('Booking request sent to tutor.');
         }catch(e){errorMsg(e);}}
         async function acceptBooking(id){await changeBooking(id,'Accepted');}
@@ -1425,7 +1453,7 @@ function renderTutorDashboard() {
                             <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Pending</span>
                         </div>
                         <div class="text-xs bg-slate-50 p-2.5 rounded-xl space-y-1">
-                            <div><strong>Subject:</strong> ${b.subject} (${b.level})</div>
+                            <div><strong>Subject:</strong> ${safe(bookingDisplaySubject(b))} (${safe(b.level)})</div>
                             <div><strong>Requested Time:</strong> ${b.date} at ${b.time}</div>
                             <div><strong>Format:</strong> ${b.format}</div>
                         </div>
@@ -1452,7 +1480,7 @@ function renderTutorDashboard() {
                 return `<article class="rounded-xl border border-slate-200 bg-slate-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div class="space-y-1">
                         <div class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-calendar text-indigo-600 mr-1"></i> ${safe(dateText)} <span class="text-indigo-700">• ${safe(timeText)}</span></div>
-                        <div class="text-sm text-slate-800 font-semibold">${safe(b.subject)} ${b.level ? `(${safe(b.level)})` : ''} — ${safe(b.studentName)}</div>
+                        <div class="text-sm text-slate-800 font-semibold">${safe(bookingDisplaySubject(b))} ${b.level ? `(${safe(b.level)})` : ''} — ${safe(b.studentName)}</div>
                         <div class="text-xs text-slate-600">${safe(b.format || 'Format not specified')} ${b.studentGrade ? `• ${safe(b.studentGrade)}` : ''}</div>
                     </div>
                     <span class="self-start bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full">Accepted</span>
@@ -1523,7 +1551,7 @@ function renderAdminDashboard() {
                             <div class="font-bold text-slate-900">${b.tutorName}</div>
                             <div class="text-[11px] text-slate-500">${b.tutorSchool}</div>
                         </td>
-                        <td class="p-3.5 font-medium text-brand-600">${b.subject} (${b.level})</td>
+                        <td class="p-3.5 font-medium text-brand-600">${safe(bookingDisplaySubject(b))} (${safe(b.level)})</td>
                         <td class="p-3.5">${b.date} at ${b.time}</td>
                         <td class="p-3.5">${b.format}</td>
                         <td class="p-3.5">
@@ -1721,7 +1749,7 @@ function updateStats() {
             showToast(migrated?`Secured ${migrated} tutor GPA record(s).`:'No legacy public GPA fields remain.');
           }catch(e){errorMsg(e);}
         }
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
+        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
     </script>
 </body>
 </html>
