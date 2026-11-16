@@ -477,6 +477,16 @@
                         </div>
                     </div>
 
+                    <!-- Upcoming accepted lessons schedule -->
+                    <section aria-labelledby="upcomingLessonsHeading" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <h2 id="upcomingLessonsHeading" class="text-xl font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-brand-600"></i> Upcoming Lessons Schedule</h2>
+                            <span id="upcomingLessonsCount" class="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">0 Upcoming</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Your accepted future lessons, sorted by date and time. Pending requests are shown above.</p>
+                        <div id="tutorUpcomingLessons" class="space-y-3" aria-live="polite"></div>
+                    </section>
+
                     <!-- Tutor Approved Subjects & Schedule Matrix -->
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -1426,6 +1436,28 @@ function renderTutorDashboard() {
                     </div>
                 `).join('');
             }
+
+            // Existing bookings are the single source of truth; no duplicate schedule records.
+            const now = new Date();
+            const upcoming = safeBookings().filter(b => {
+                if (b.tutorId !== currentLoggedTutor.id || b.status !== 'Accepted' || !b.date || !b.time) return false;
+                const start = new Date(`${b.date}T${b.time}`);
+                return !Number.isNaN(start.getTime()) && start >= now;
+            }).sort((a,b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
+            $('upcomingLessonsCount').textContent = `${upcoming.length} Upcoming`;
+            $('tutorUpcomingLessons').innerHTML = upcoming.length ? upcoming.map(b => {
+                const start = new Date(`${b.date}T${b.time}`);
+                const dateText = start.toLocaleDateString(undefined, {weekday:'short',month:'short',day:'numeric',year:'numeric'});
+                const timeText = start.toLocaleTimeString(undefined, {hour:'numeric',minute:'2-digit'});
+                return `<article class="rounded-xl border border-slate-200 bg-slate-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="font-bold text-slate-900 text-sm"><i class="fa-regular fa-calendar text-indigo-600 mr-1"></i> ${safe(dateText)} <span class="text-indigo-700">• ${safe(timeText)}</span></div>
+                        <div class="text-sm text-slate-800 font-semibold">${safe(b.subject)} ${b.level ? `(${safe(b.level)})` : ''} — ${safe(b.studentName)}</div>
+                        <div class="text-xs text-slate-600">${safe(b.format || 'Format not specified')} ${b.studentGrade ? `• ${safe(b.studentGrade)}` : ''}</div>
+                    </div>
+                    <span class="self-start bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full">Accepted</span>
+                </article>`;
+            }).join('') : `<div class="text-center rounded-xl border border-dashed border-slate-200 bg-slate-50 py-8 px-4"><i class="fa-regular fa-calendar text-3xl text-slate-400 mb-2"></i><p class="text-sm font-semibold text-slate-700">No upcoming accepted lessons yet.</p><p class="text-xs text-slate-500 mt-1">When you accept a future booking, it will appear here automatically.</p></div>`;
 
             const mySubjectRequest=subjectRequests.find(r=>r.id===currentLoggedTutor.id);
             $('mySubjectRequestStatus').textContent=mySubjectRequest?.status==='Pending'?'Subject change request awaiting Head Admin approval.':mySubjectRequest?.status==='Rejected'?'Your last subject change request was rejected. You may submit a new one.':'';
