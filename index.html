@@ -1950,7 +1950,25 @@ function updateStats() {
             showToast(migrated?`Secured ${migrated} tutor GPA record(s).`:'No legacy public GPA fields remain.');
           }catch(e){errorMsg(e);}
         }
-        Object.assign(window,{showAdminSection,renderAISImpact,openStudentSessions,handleStudentLogin,logoutStudent,refreshStudentSessions,setStudentSessionFilter,switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openTutorHistory,closeTutorHistory,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
+        Object.assign(window,{renderAISImpact,openStudentSessions,handleStudentLogin,logoutStudent,refreshStudentSessions,setStudentSessionFilter,switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openTutorHistory,closeTutorHistory,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
+    </script>
+    <!-- Standalone navigation: independent of Firebase module initialization. -->
+    <script>
+      window.showAdminSection = function(section) {
+        const home = document.getElementById('adminHomePanel');
+        const portal = document.getElementById('adminPortalView');
+        if (!home || !portal || portal.classList.contains('hidden')) return;
+        const sections = Array.from(portal.querySelectorAll('.admin-detail-section'));
+        const target = section === 'home' ? null : document.getElementById('adminSection_' + section);
+        if (section !== 'home' && (!target || !portal.contains(target))) return;
+        home.classList.toggle('hidden', section !== 'home');
+        sections.forEach(el => el.classList.add('hidden'));
+        if (target) target.classList.remove('hidden');
+        if (section === 'impact' && typeof window.renderAISImpact === 'function') {
+          try { window.renderAISImpact(); } catch (error) { console.error('AIS Impact rendering error:', error); }
+        }
+        window.scrollTo(0, 0);
+      };
     </script>
 </body>
 </html>
