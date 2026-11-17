@@ -609,6 +609,7 @@
                                             <th class="p-3.5">Approved Subjects</th>
                                             <th class="p-3.5">Verified Skill Level</th>
                                             <th class="p-3.5">Interview Record</th>
+                                            <th class="p-3.5">Total Verified Tutoring Hours</th>
                                             <th class="p-3.5 text-right">Actions</th>
                                         </tr>
                                     </thead>
@@ -622,6 +623,32 @@
 
                 </div>
             </section>
+        </div>
+
+        <!-- Admin-only tutor verified lesson history; opened from the approved roster. -->
+        <div id="adminTutorHistoryView" class="hidden">
+          <section class="py-9 bg-slate-950 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <button type="button" onclick="closeTutorHistory()" class="text-sm font-bold text-cyan-300 hover:text-white mb-5"><i class="fa-solid fa-arrow-left me-2"></i>Back to Head Admin</button>
+              <h1 id="historyTutorName" class="text-3xl font-extrabold">Tutor Lesson History</h1>
+              <p class="text-slate-300 text-sm mt-2">Verified tutoring sessions only</p>
+            </div>
+          </section>
+          <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+              <p class="text-xs uppercase tracking-wide font-bold text-slate-500">Total Verified Tutoring Hours</p>
+              <p id="historyTotalHours" class="text-3xl font-extrabold text-indigo-700 mt-2">0 hours</p>
+              <p id="historySessionCount" class="text-xs text-slate-500 mt-1">0 verified lessons</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-sm">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-100 text-slate-700 text-xs uppercase"><tr>
+                  <th class="p-4">Date</th><th class="p-4">Student</th><th class="p-4">Subject / Program</th><th class="p-4">Session Format</th><th class="p-4 text-right">Verified Duration</th>
+                </tr></thead>
+                <tbody id="historyLessonRows" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
 
     </main>
@@ -1092,7 +1119,7 @@
         };
         const ADMIN_UID = 'oET89CIafkX2tCM5zpSvjHm01a33';
         let tutors=[], bookingRequests=[], completedSessions=[], currentLoggedTutor=null, isAdminLoggedIn=false;
-        let fb=null, user=null, pendingSessions=[], tutorReviews=[], subjectRequests=[];
+        let fb=null, user=null, pendingSessions=[], verifiedSessions=[], tutorReviews=[], subjectRequests=[];
         const $=id=>document.getElementById(id);
         const val=id=>$(id).value.trim();
         const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1132,7 +1159,9 @@
               if(isAdminLoggedIn){
                 const ss=await fb.getDocs(fb.query(fb.collection(fb.db,'sessions'),fb.where('status','==','Pending Verification')));
                 pendingSessions=ss.docs.map(d=>({id:d.id,...d.data()}));
-              } else pendingSessions=[];
+                const vs=await fb.getDocs(fb.query(fb.collection(fb.db,'sessions'),fb.where('status','==','Verified')));
+                verifiedSessions=vs.docs.map(d=>({id:d.id,...d.data()}));
+              } else {pendingSessions=[];verifiedSessions=[];}
             }
             try {
               const reviewSnap=await fb.getDocs(fb.collection(fb.db,'reviews'));
@@ -1168,6 +1197,7 @@
         });
 
 function switchPortal(portal) {
+            $('adminTutorHistoryView').classList.add('hidden');
             document.getElementById('publicPortalView').classList.add('hidden');
             document.getElementById('aboutPortalView').classList.add('hidden');
             document.getElementById('tutorPortalView').classList.add('hidden');
@@ -1565,7 +1595,7 @@ function renderAdminDashboard() {
             const appTutors = safeTutors().filter(t => t.status === 'Approved');
             const aTable = document.getElementById('adminApprovedTutorsTable');
             if (appTutors.length === 0) {
-                aTable.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 italic">No approved tutors in the active roster.</td></tr>`;
+                aTable.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">No approved tutors in the active roster.</td></tr>`;
             } else {
                 aTable.innerHTML = appTutors.map(t => `
                     <tr class="hover:bg-slate-50">
@@ -1578,6 +1608,7 @@ function renderAdminDashboard() {
                         <td class="p-3.5 font-bold text-brand-600">${safe((t.subjects||[t.subject]).join(', '))}</td>
                         <td class="p-3.5"><span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">${t.level}</span></td>
                         <td class="p-3.5 italic text-slate-600 text-xs">${t.verifiedNotes || 'Approved via Interview'}</td>
+                        <td class="p-3.5"><button type="button" onclick="openTutorHistory('${t.id}')" class="font-extrabold text-indigo-700 hover:text-indigo-900 underline underline-offset-2 whitespace-nowrap" title="View verified lesson history">${formatVerifiedHours(tutorVerifiedSessions(t.id).reduce((sum,x)=>sum+Number(x.hours||0),0))} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ms-1"></i></button></td>
                         <td class="p-3.5 text-right">
                             <button onclick="revokeTutor('${t.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs">Revoke</button>
                         </td>
@@ -1585,7 +1616,38 @@ function renderAdminDashboard() {
                 `).join('');
             }
         }
-function openInterviewModal(id) {
+function tutorVerifiedSessions(tutorId){
+          return verifiedSessions.filter(x=>x.status==='Verified'&&x.tutorUid===tutorId);
+        }
+        function formatVerifiedHours(n){
+          const v=Math.round((Number(n)||0)*100)/100;
+          return `${v.toLocaleString('en-US',{maximumFractionDigits:2})} ${v===1?'hour':'hours'}`;
+        }
+        function openTutorHistory(tutorId){
+          if(!isAdminLoggedIn||fb?.auth?.currentUser?.uid!==ADMIN_UID){showToast('Head Admin access required.');return;}
+          const tutor=tutors.find(t=>t.id===tutorId&&t.status==='Approved');
+          if(!tutor){showToast('Tutor not found in the active roster.');return;}
+          const sessions=tutorVerifiedSessions(tutorId).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+          const bookingById=new Map(bookingRequests.map(b=>[b.id,b]));
+          $('historyTutorName').textContent=`${tutor.name} — Lesson History`;
+          $('historyTotalHours').textContent=formatVerifiedHours(sessions.reduce((sum,x)=>sum+Number(x.hours||0),0));
+          $('historySessionCount').textContent=`${sessions.length} verified ${sessions.length===1?'lesson':'lessons'}`;
+          $('historyLessonRows').innerHTML=sessions.length?sessions.map(x=>{
+            const b=bookingById.get(x.bookingId)||{};
+            const subject=x.subject||b.subject||'—';
+            const course=b.courseLabel || (b.level?`${subject} (${b.level}${b.courseVariant?' · '+b.courseVariant:''})`:subject);
+            return `<tr class="hover:bg-slate-50"><td class="p-4 whitespace-nowrap">${safe(x.date||b.date||'—')}</td><td class="p-4 font-semibold">${safe(b.studentName||x.tuteeName||'Student not recorded')}</td><td class="p-4">${safe(course)}</td><td class="p-4">${safe(x.format||b.format||'—')}</td><td class="p-4 text-right font-bold text-indigo-700">${formatVerifiedHours(x.hours)}</td></tr>`;
+          }).join(''):'<tr><td colspan="5" class="p-8 text-center text-slate-500">No verified lessons recorded for this tutor yet.</td></tr>';
+          for(const id of ['publicPortalView','aboutPortalView','tutorPortalView','adminPortalView'])$(id).classList.add('hidden');
+          $('adminTutorHistoryView').classList.remove('hidden');
+          window.scrollTo(0,0);
+        }
+        function closeTutorHistory(){
+          $('adminTutorHistoryView').classList.add('hidden');
+          if(isAdminLoggedIn&&fb?.auth?.currentUser?.uid===ADMIN_UID)switchPortal('admin');
+          else switchPortal('public');
+        }
+        function openInterviewModal(id) {
             const tutor = tutors.find(t => t.id === id);
             if (!tutor) return;
 
@@ -1749,7 +1811,7 @@ function updateStats() {
             showToast(migrated?`Secured ${migrated} tutor GPA record(s).`:'No legacy public GPA fields remain.');
           }catch(e){errorMsg(e);}
         }
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
+        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openTutorHistory,closeTutorHistory,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
     </script>
 </body>
 </html>
