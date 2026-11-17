@@ -564,7 +564,10 @@
             <section class="py-10 bg-slate-50 min-h-[600px]">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
                     
-                    <!-- Pending Tutor Interviews Section -->
+<div id="adminHomePanel" class="space-y-8">
+<div class="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm"><div class="flex flex-wrap items-center justify-between gap-3"><div><span class="text-xs uppercase font-bold tracking-widest text-indigo-600">Administration overview</span><h2 class="text-2xl font-extrabold text-slate-900 mt-2">Head Admin Home</h2><p class="text-slate-500 text-sm mt-2">Select a section to manage applications, tutoring activity, or school impact.</p></div><span class="rounded-xl bg-indigo-50 text-indigo-700 text-xs font-bold px-4 py-2">AIS · School Administration</span></div></div>
+<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5"><button type="button" onclick="showAdminSection('pending')" class="text-left group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all"><div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-5"><i class="fa-solid fa-user-clock text-xl"></i></div><div class="flex items-center justify-between gap-3"><h3 class="font-extrabold text-slate-900 text-base">Pending Tutor Applications</h3><i class="fa-solid fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i></div><p class="text-slate-500 text-xs mt-2">Open and manage this administrative section.</p><span id="adminHomeCount_pending" class="inline-block text-xs font-bold text-indigo-600 mt-4"></span></button><button type="button" onclick="showAdminSection('bookings')" class="text-left group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all"><div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5"><i class="fa-solid fa-calendar-check text-xl"></i></div><div class="flex items-center justify-between gap-3"><h3 class="font-extrabold text-slate-900 text-base">Student Session Requests</h3><i class="fa-solid fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i></div><p class="text-slate-500 text-xs mt-2">Open and manage this administrative section.</p><span id="adminHomeCount_bookings" class="inline-block text-xs font-bold text-indigo-600 mt-4"></span></button><button type="button" onclick="showAdminSection('hours')" class="text-left group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all"><div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5"><i class="fa-solid fa-clock text-xl"></i></div><div class="flex items-center justify-between gap-3"><h3 class="font-extrabold text-slate-900 text-base">Hours Awaiting Verification</h3><i class="fa-solid fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i></div><p class="text-slate-500 text-xs mt-2">Open and manage this administrative section.</p><span id="adminHomeCount_hours" class="inline-block text-xs font-bold text-indigo-600 mt-4"></span></button><button type="button" onclick="showAdminSection('subjects')" class="text-left group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all"><div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-5"><i class="fa-solid fa-list-check text-xl"></i></div><div class="flex items-center justify-between gap-3"><h3 class="font-extrabold text-slate-900 text-base">Subject Change Requests</h3><i class="fa-solid fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i></div><p class="text-slate-500 text-xs mt-2">Open and manage this administrative section.</p><span id="adminHomeCount_subjects" class="inline-block text-xs font-bold text-indigo-600 mt-4"></span></button><button type="button" onclick="showAdminSection('tutors')" class="text-left group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all"><div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5"><i class="fa-solid fa-users text-xl"></i></div><div class="flex items-center justify-between gap-3"><h3 class="font-extrabold text-slate-900 text-base">Approved Active Tutors</h3><i class="fa-solid fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i></div><p class="text-slate-500 text-xs mt-2">Open and manage this administrative section.</p><span id="adminHomeCount_tutors" class="inline-block text-xs font-bold text-indigo-600 mt-4"></span></button><button type="button" onclick="showAdminSection('impact')" class="text-left group bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all"><div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-5"><i class="fa-solid fa-chart-simple text-xl"></i></div><div class="flex items-center justify-between gap-3"><h3 class="font-extrabold text-slate-900 text-base">AIS Impact</h3><i class="fa-solid fa-arrow-right text-indigo-500 group-hover:translate-x-1 transition-transform"></i></div><p class="text-slate-500 text-xs mt-2">Live school-level tutoring performance and verified outcomes.</p><span id="adminHomeCount_impact" class="inline-block text-xs font-bold text-indigo-600 mt-4"></span></button></div></div>
+<div id="adminSection_pending" class="admin-detail-section hidden space-y-6"><div class="flex flex-wrap items-center justify-between gap-3"><div><button onclick="showAdminSection('home')" class="text-indigo-700 text-xs font-bold hover:underline"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Admin Home</button><h2 class="text-2xl font-extrabold text-slate-900 mt-3">Pending Tutor Applications</h2></div></div><!-- Pending Tutor Interviews Section -->
                     <div>
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -578,7 +581,8 @@
                         </div>
                     </div>
 
-                    <!-- Master Tutee Booking Supervision Table -->
+                    </div>
+<div id="adminSection_bookings" class="admin-detail-section hidden space-y-6"><div class="flex flex-wrap items-center justify-between gap-3"><div><button onclick="showAdminSection('home')" class="text-indigo-700 text-xs font-bold hover:underline"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Admin Home</button><h2 class="text-2xl font-extrabold text-slate-900 mt-3">Student Session Requests</h2></div></div><!-- Master Tutee Booking Supervision Table -->
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-brand-600"></i> All System Student Session Requests
@@ -604,14 +608,17 @@
                         </div>
                     </div>
 
-                    <!-- Session verification queue -->
+                    </div>
+<div id="adminSection_hours" class="admin-detail-section hidden space-y-6"><div class="flex flex-wrap items-center justify-between gap-3"><div><button onclick="showAdminSection('home')" class="text-indigo-700 text-xs font-bold hover:underline"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Admin Home</button><h2 class="text-2xl font-extrabold text-slate-900 mt-3">Hours Awaiting Verification</h2></div></div><!-- Session verification queue -->
                     <div><h2 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-clock text-emerald-600"></i> Hours Awaiting Verification</h2>
                     <div id="adminHoursQueue" class="grid md:grid-cols-2 gap-4"></div></div>
 
-                    <div><h2 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-list-check text-indigo-600"></i> Subject Change Requests</h2>
+</div>
+<div id="adminSection_subjects" class="admin-detail-section hidden space-y-6"><div class="flex flex-wrap items-center justify-between gap-3"><div><button onclick="showAdminSection('home')" class="text-indigo-700 text-xs font-bold hover:underline"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Admin Home</button><h2 class="text-2xl font-extrabold text-slate-900 mt-3">Subject Change Requests</h2></div></div>                    <div><h2 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-list-check text-indigo-600"></i> Subject Change Requests</h2>
                       <div id="adminSubjectRequests" class="grid md:grid-cols-2 gap-4"></div>
                     </div>
-                    <!-- Approved Tutors Management Table -->
+                    </div>
+<div id="adminSection_tutors" class="admin-detail-section hidden space-y-6"><div class="flex flex-wrap items-center justify-between gap-3"><div><button onclick="showAdminSection('home')" class="text-indigo-700 text-xs font-bold hover:underline"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Admin Home</button><h2 class="text-2xl font-extrabold text-slate-900 mt-3">Approved Active Tutors</h2></div></div><!-- Approved Tutors Management Table -->
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-shield-check text-emerald-500"></i> Approved Active Tutor Roster
@@ -640,7 +647,8 @@
                         </div>
                     </div>
 
-                </div>
+</div>
+<div id="adminSection_impact" class="admin-detail-section hidden space-y-6"><button onclick="showAdminSection('home')" class="text-indigo-700 text-xs font-bold hover:underline"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Admin Home</button><div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm"><div class="flex flex-wrap justify-between items-start gap-4 mb-8"><div><span class="text-xs font-extrabold tracking-wider uppercase text-indigo-600">School performance</span><h2 class="text-3xl font-extrabold text-slate-900 mt-2">AIS Impact</h2><p class="text-slate-500 text-sm mt-1">Live metrics based on verified tutoring activity</p></div><select id="impactAcademicYear" onchange="renderAISImpact()" class="border border-slate-300 rounded-xl p-3 text-sm font-semibold bg-slate-50"><option value="all">All time</option></select></div><div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"><div class="rounded-2xl bg-indigo-50 p-5"><i class="fa-solid fa-users text-indigo-600 mb-3"></i><div id="impactTutors" class="text-3xl font-black text-slate-900">—</div><p class="text-xs text-slate-600 mt-2">Verified Tutors</p></div><div class="rounded-2xl bg-cyan-50 p-5"><i class="fa-solid fa-book-open text-cyan-600 mb-3"></i><div id="impactSessions" class="text-3xl font-black text-slate-900">—</div><p class="text-xs text-slate-600 mt-2">Sessions Completed</p></div><div class="rounded-2xl bg-emerald-50 p-5"><i class="fa-solid fa-clock text-emerald-600 mb-3"></i><div id="impactHours" class="text-3xl font-black text-slate-900">—</div><p class="text-xs text-slate-600 mt-2">Verified Hours</p></div><div class="rounded-2xl bg-slate-100 p-5"><i class="fa-solid fa-graduation-cap text-slate-600 mb-3"></i><div id="impactStudents" class="text-3xl font-black text-slate-900">—</div><p class="text-xs text-slate-600 mt-2">Students Supported</p></div></div><div class="border-t border-slate-200 pt-7"><h3 class="text-lg font-bold text-slate-900 mb-5">Verified Sessions by Subject</h3><div id="impactSubjectBars" class="space-y-4"></div></div><p class="text-xs text-slate-500 mt-8">Completed sessions, hours, and subject breakdown include only Head Admin-verified session logs. Students supported are unique matched student accounts or booking records.</p></div></div>                </div>
             </section>
         </div>
 
@@ -1161,7 +1169,7 @@
         const safeObj=o=>Object.fromEntries(Object.entries(o||{}).map(([k,v])=>[k,typeof v==='string'?safe(v):v]));
         const safeTutors=()=>tutors.map(safeObj),safeBookings=()=>bookingRequests.map(safeObj),safeSessions=()=>completedSessions.map(safeObj);
         const errorMsg=e=>{console.error(e);showToast(e?.message||'Something went wrong.','fa-circle-xmark text-rose-400');};
-        const refresh=()=>{populateSchoolFilter();renderPublicTutors();renderPublicSessionLog();updateStats();if(currentLoggedTutor)renderTutorDashboard();if(isAdminLoggedIn){renderAdminDashboard();renderHoursQueue();renderSubjectRequests();}if(!$("studentPortalView").classList.contains("hidden"))renderStudentSessions();};
+        const refresh=()=>{populateSchoolFilter();renderPublicTutors();renderPublicSessionLog();updateStats();if(currentLoggedTutor)renderTutorDashboard();if(isAdminLoggedIn){renderAdminDashboard();renderHoursQueue();renderSubjectRequests();updateAdminHomeCounts();if(activeAdminSection==='impact')renderAISImpact();}if(!$("studentPortalView").classList.contains("hidden"))renderStudentSessions();};
         async function loadData(){
           if(!fb)return;
           try {
@@ -1274,6 +1282,7 @@ function switchPortal(portal) {
                 document.getElementById('adminPortalView').classList.remove('hidden');
                 document.getElementById('navAdmin').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-amber-700 bg-amber-100 border border-amber-300 transition-all flex items-center gap-1.5 relative";
                 renderAdminDashboard();
+                showAdminSection('home');
             }
         }
 
@@ -1620,6 +1629,45 @@ function renderTutorDashboard() {
                 </div>
             `;
         }
+let activeAdminSection='home';
+function showAdminSection(section){
+ if(!isAdminLoggedIn || fb?.auth?.currentUser?.uid!==ADMIN_UID){showToast('Head Admin access required.');return;}
+ activeAdminSection=section;
+ $('adminHomePanel').classList.toggle('hidden',section!=='home');
+ document.querySelectorAll('.admin-detail-section').forEach(el=>el.classList.add('hidden'));
+ if(section!=='home'){const el=$('adminSection_'+section);if(el)el.classList.remove('hidden');}
+ if(section==='impact')renderAISImpact();
+ window.scrollTo({top:0,behavior:'instant'});
+}
+function updateAdminHomeCounts(){
+ if(!isAdminLoggedIn)return;
+ const counts={pending:tutors.filter(t=>t.status==='Pending Interview').length,bookings:bookingRequests.length,hours:pendingSessions.length,subjects:subjectRequests.filter(x=>x.status==='Pending'||x.status==='Pending Approval').length,tutors:tutors.filter(t=>t.status==='Approved').length,impact:verifiedSessions.length};
+ Object.entries(counts).forEach(([k,v])=>{const el=$('adminHomeCount_'+k);if(el)el.textContent=v+' '+(k==='impact'?'verified sessions':k==='tutors'?'active tutors':k==='pending'?'pending applications':'records');});
+}
+function renderAISImpact(){
+ if(!isAdminLoggedIn||fb?.auth?.currentUser?.uid!==ADMIN_UID)return;
+ const yearSelect=$('impactAcademicYear');if(!yearSelect)return;
+ const years=[...new Set(verifiedSessions.map(x=>String(x.date||'').slice(0,4)).filter(y=>/^20\d{2}$/.test(y)).map(y=>Number(y)))].sort((a,b)=>b-a);
+ const yearOptions=new Set([...years.map(y=>`${y}-${y+1}`),...years.map(y=>`${y-1}-${y}`)]);
+ const previous=yearSelect.value;
+ yearSelect.innerHTML='<option value="all">All time</option>'+[...yearOptions].sort().reverse().map(y=>`<option value="${y}">${y} Academic Year</option>`).join('');
+ yearSelect.value=[...yearSelect.options].some(o=>o.value===previous)?previous:'all';
+ const selected=yearSelect.value;
+ const filtered=verifiedSessions.filter(x=>{if(x.status!=='Verified')return false;if(selected==='all')return true;const date=String(x.date||'');const [y]=selected.split('-').map(Number);return date>=`${y}-08-01`&&date<`${y+1}-08-01`;});
+ const approved=tutors.filter(t=>t.status==='Approved'&&String(t.school||'').toUpperCase()==='AIS');
+ const tutorIds=new Set(approved.map(t=>t.id));
+ const aisSessions=filtered.filter(x=>tutorIds.has(x.tutorUid)||String(x.tutorSchool||'').toUpperCase()==='AIS');
+ const bookingsById=new Map(bookingRequests.map(b=>[b.id,b]));
+ const studentIds=new Set();let unlinked=0;const subjects=new Map();
+ for(const x of aisSessions){const b=bookingsById.get(x.bookingId);const id=b?.studentUid||x.studentUid;if(id)studentIds.add(id);else if(b?.studentEmail)studentIds.add('email:'+b.studentEmail.toLowerCase());else unlinked++;const subject=String(x.subject||b?.subject||'Unspecified').trim();subjects.set(subject,(subjects.get(subject)||0)+1);}
+ $('impactTutors').textContent=approved.length;
+ $('impactSessions').textContent=aisSessions.length;
+ $('impactHours').textContent=(Math.round(aisSessions.reduce((sum,x)=>sum+(Number(x.hours)||0),0)*100)/100).toLocaleString('en-US');
+ $('impactStudents').textContent=unlinked?'—':studentIds.size;
+ const bars=$('impactSubjectBars');const sorted=[...subjects].sort((a,b)=>b[1]-a[1]);const max=Math.max(1,...sorted.map(x=>x[1]));
+ bars.innerHTML=sorted.length?sorted.map(([subject,count])=>`<div class="grid grid-cols-[95px_1fr_32px] sm:grid-cols-[160px_1fr_40px] items-center gap-3"><span class="text-xs sm:text-sm font-semibold text-slate-700 break-words">${safe(subject)}</span><div class="h-3 bg-slate-100 rounded-full overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500" style="width:${100*count/max}%"></div></div><span class="text-sm text-right font-bold text-slate-700">${count}</span></div>`).join(''):'<p class="text-slate-500 text-sm">No verified tutoring sessions in this period.</p>';
+ if(unlinked){$('impactStudents').title='Some verified sessions cannot be linked to a student account; total unavailable.';}else $('impactStudents').removeAttribute('title');
+}
 function renderAdminDashboard() {
             const pending = safeTutors().filter(t => t.status === 'Pending Interview');
             document.getElementById('adminPendingCountBadge').innerText = `${pending.length} Pending`;
@@ -1735,7 +1783,7 @@ function tutorVerifiedSessions(tutorId){
         }
         function closeTutorHistory(){
           $('adminTutorHistoryView').classList.add('hidden');
-          if(isAdminLoggedIn&&fb?.auth?.currentUser?.uid===ADMIN_UID)switchPortal('admin');
+          if(isAdminLoggedIn&&fb?.auth?.currentUser?.uid===ADMIN_UID){switchPortal('admin');showAdminSection('tutors');}
           else switchPortal('public');
         }
         function openInterviewModal(id) {
