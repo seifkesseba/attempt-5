@@ -80,6 +80,7 @@
                         <i class="fa-solid fa-circle-info text-cyan-500"></i> About & Benefits
                     </button>
 
+                    <button onclick="openStudentSessions()" id="navStudent" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 transition-all flex items-center gap-1.5"><i class="fa-solid fa-calendar-days text-cyan-500"></i> My Sessions</button>
                     <button onclick="openTutorLoginModal()" id="navTutor" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 transition-all flex items-center gap-1.5">
                         <i class="fa-solid fa-user-lock text-brand-500"></i> Tutor Portal
                     </button>
@@ -522,6 +523,24 @@
             </section>
         </div>
 
+
+
+        <!-- STUDENT MY SESSIONS DASHBOARD -->
+        <div id="studentPortalView" class="hidden">
+          <section class="py-10 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+              <div class="flex flex-wrap justify-between items-center gap-4">
+                <div><span class="text-xs font-bold text-cyan-300 uppercase tracking-wider">Student Portal</span><h1 class="text-3xl font-extrabold mt-2">My Sessions</h1><p class="text-slate-300 text-sm mt-2" id="studentWelcome">Your tutoring requests and lesson history in one place.</p></div>
+                <div class="flex gap-2 flex-wrap"><button onclick="openModal('tuteeBookingModal')" class="bg-cyan-500 hover:bg-cyan-600 text-white text-xs font-bold px-4 py-3 rounded-xl"><i class="fa-solid fa-plus mr-1"></i> Book a Session</button><button onclick="refreshStudentSessions()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold px-4 py-3 rounded-xl">Refresh</button><button onclick="logoutStudent()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-3 rounded-xl">Log Out</button></div>
+              </div>
+            </div>
+          </section>
+          <section class="py-10 bg-slate-50 min-h-[520px]"><div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div id="studentSessionCounts" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-7"></div>
+            <div class="flex flex-wrap gap-2 mb-5" id="studentSessionFilters"></div>
+            <div id="studentSessionList" class="grid md:grid-cols-2 gap-4" aria-live="polite"></div>
+          </div></section>
+        </div>
 
         <!-- ================= 3. PRIVATE HEAD ADMIN PORTAL ================= -->
         <div id="adminPortalView" class="hidden">
@@ -1098,6 +1117,21 @@
     </form>
   </div>
 </div>
+
+    <div id="studentLoginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl relative">
+        <button type="button" onclick="closeModal('studentLoginModal')" class="absolute top-5 right-5 text-slate-500" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4"><i class="fa-solid fa-calendar-check text-xl"></i></div>
+        <h2 class="text-xl font-extrabold text-slate-900">Student Sign In</h2>
+        <p class="text-sm text-slate-500 mt-2 mb-5">Use the email and password you used when booking a session.</p>
+        <form onsubmit="handleStudentLogin(event)" class="space-y-4">
+          <div><label for="studentLoginEmail" class="block text-xs font-bold text-slate-700 mb-1">Email</label><input id="studentLoginEmail" type="email" autocomplete="email" required class="w-full border border-slate-300 rounded-xl p-3 text-sm"></div>
+          <div><label for="studentLoginPassword" class="block text-xs font-bold text-slate-700 mb-1">Password</label><input id="studentLoginPassword" type="password" autocomplete="current-password" required class="w-full border border-slate-300 rounded-xl p-3 text-sm"></div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3 text-sm font-bold">Sign In to My Sessions</button>
+        </form>
+      </div>
+    </div>
+
     <!-- Toast Notification Popup -->
     <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 transition-all duration-300 opacity-0 pointer-events-none z-50">
         <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
@@ -1120,13 +1154,14 @@
         const ADMIN_UID = 'oET89CIafkX2tCM5zpSvjHm01a33';
         let tutors=[], bookingRequests=[], completedSessions=[], currentLoggedTutor=null, isAdminLoggedIn=false;
         let fb=null, user=null, pendingSessions=[], verifiedSessions=[], tutorReviews=[], subjectRequests=[];
+        let studentSessionFilter="All";
         const $=id=>document.getElementById(id);
         const val=id=>$(id).value.trim();
         const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         const safeObj=o=>Object.fromEntries(Object.entries(o||{}).map(([k,v])=>[k,typeof v==='string'?safe(v):v]));
         const safeTutors=()=>tutors.map(safeObj),safeBookings=()=>bookingRequests.map(safeObj),safeSessions=()=>completedSessions.map(safeObj);
         const errorMsg=e=>{console.error(e);showToast(e?.message||'Something went wrong.','fa-circle-xmark text-rose-400');};
-        const refresh=()=>{populateSchoolFilter();renderPublicTutors();renderPublicSessionLog();updateStats();if(currentLoggedTutor)renderTutorDashboard();if(isAdminLoggedIn){renderAdminDashboard();renderHoursQueue();renderSubjectRequests();}};
+        const refresh=()=>{populateSchoolFilter();renderPublicTutors();renderPublicSessionLog();updateStats();if(currentLoggedTutor)renderTutorDashboard();if(isAdminLoggedIn){renderAdminDashboard();renderHoursQueue();renderSubjectRequests();}if(!$("studentPortalView").classList.contains("hidden"))renderStudentSessions();};
         async function loadData(){
           if(!fb)return;
           try {
@@ -1198,6 +1233,7 @@
 
 function switchPortal(portal) {
             $('adminTutorHistoryView').classList.add('hidden');
+            $('studentPortalView').classList.add('hidden');
             document.getElementById('publicPortalView').classList.add('hidden');
             document.getElementById('aboutPortalView').classList.add('hidden');
             document.getElementById('tutorPortalView').classList.add('hidden');
@@ -1205,6 +1241,7 @@ function switchPortal(portal) {
 
             document.getElementById('navPublic').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 transition-all flex items-center gap-1.5";
             document.getElementById('navAbout').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 transition-all flex items-center gap-1.5";
+            document.getElementById('navStudent').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 transition-all flex items-center gap-1.5";
             document.getElementById('navTutor').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 transition-all flex items-center gap-1.5";
             document.getElementById('navAdmin').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 hover:text-amber-600 hover:bg-amber-50 transition-all flex items-center gap-1.5 relative";
 
@@ -1214,6 +1251,11 @@ function switchPortal(portal) {
             } else if (portal === 'about') {
                 document.getElementById('aboutPortalView').classList.remove('hidden');
                 document.getElementById('navAbout').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-brand-600 bg-brand-50 border border-brand-100 transition-all flex items-center gap-1.5";
+            } else if (portal === 'student') {
+                if (!user || isAdminLoggedIn || currentLoggedTutor) { openStudentSessions(); $('publicPortalView').classList.remove('hidden'); return; }
+                $('studentPortalView').classList.remove('hidden');
+                $('navStudent').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-brand-600 bg-brand-50 border border-brand-100 transition-all flex items-center gap-1.5";
+                renderStudentSessions();
             } else if (portal === 'tutor') {
                 if (!currentLoggedTutor) {
                     openTutorLoginModal();
@@ -1233,6 +1275,55 @@ function switchPortal(portal) {
                 document.getElementById('navAdmin').className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl text-amber-700 bg-amber-100 border border-amber-300 transition-all flex items-center gap-1.5 relative";
                 renderAdminDashboard();
             }
+        }
+
+
+        // Student portal: only bookings owned by the authenticated Firebase UID are displayed.
+        function openStudentSessions(){
+          if(!fb)return showToast('Please wait for the website to finish loading.');
+          if(user && !isAdminLoggedIn && !currentLoggedTutor){switchPortal('student');return;}
+          if(user && (isAdminLoggedIn || currentLoggedTutor))return showToast('Log out of the tutor/admin account before signing in as a student.');
+          openModal('studentLoginModal');
+        }
+        async function handleStudentLogin(e){
+          e.preventDefault();if(!fb)return;
+          try{
+            const credential=await fb.signInWithEmailAndPassword(fb.auth,val('studentLoginEmail'),val('studentLoginPassword'));
+            if(credential.user.uid===ADMIN_UID){await fb.signOut(fb.auth);throw Error('Please use a student account.');}
+            const tutorSnap=await fb.getDoc(fb.doc(fb.db,'tutors',credential.user.uid));
+            if(tutorSnap.exists() && tutorSnap.data().status==='Approved'){await fb.signOut(fb.auth);throw Error('Please use a student account, not a tutor account.');}
+            closeModal('studentLoginModal');await loadData();switchPortal('student');
+          }catch(err){errorMsg(err);}
+        }
+        async function logoutStudent(){if(!fb)return;await fb.signOut(fb.auth);bookingRequests=[];switchPortal('public');showToast('Signed out of My Sessions.');}
+        async function refreshStudentSessions(){if(!user || isAdminLoggedIn || currentLoggedTutor)return openStudentSessions();await loadData();showToast('Sessions updated.');}
+        function studentSessionStatus(b){
+          const st=String(b.status||'Pending').toLowerCase();
+          if(st.includes('declin')||st.includes('reject'))return 'Declined';
+          if(st.includes('cancel'))return 'Cancelled';
+          if(st.includes('complet')||b.reviewEligible===true)return 'Completed';
+          if(st.includes('accept')||st.includes('confirm')){
+            const when=new Date(`${b.date||''}T${b.time||'00:00'}`);
+            return !Number.isNaN(when.getTime()) && when.getTime()<Date.now()?'Past — Awaiting Verification':'Upcoming';
+          }
+          return 'Pending';
+        }
+        function setStudentSessionFilter(f){studentSessionFilter=f;renderStudentSessions();}
+        function renderStudentSessions(){
+          if(!user || isAdminLoggedIn || currentLoggedTutor)return;
+          const own=bookingRequests.filter(b=>b.studentUid===user.uid);
+          const types=['All','Upcoming','Pending','Completed','Declined','Cancelled','Past — Awaiting Verification'];
+          const counts=Object.fromEntries(types.map(t=>[t,t==='All'?own.length:own.filter(b=>studentSessionStatus(b)===t).length]));
+          $('studentWelcome').textContent=`Signed in as ${user.email||'student'} · Your tutoring requests and lesson history.`;
+          $('studentSessionCounts').innerHTML=types.slice(1,6).map(t=>`<div class="bg-white border border-slate-200 rounded-2xl p-4"><div class="text-2xl font-extrabold text-indigo-700">${counts[t]}</div><div class="text-xs font-semibold text-slate-500 mt-1">${t}</div></div>`).join('');
+          $('studentSessionFilters').innerHTML=types.map(t=>`<button type="button" onclick="setStudentSessionFilter('${t}')" class="px-3 py-2 rounded-xl text-xs font-bold border ${studentSessionFilter===t?'bg-indigo-600 text-white border-indigo-600':'bg-white text-slate-600 border-slate-200 hover:bg-indigo-50'}">${t} (${counts[t]})</button>`).join('');
+          const visible=own.filter(b=>studentSessionFilter==='All'||studentSessionStatus(b)===studentSessionFilter).sort((a,b)=>`${b.date||''}T${b.time||''}`.localeCompare(`${a.date||''}T${a.time||''}`));
+          const palette={'Upcoming':'bg-cyan-100 text-cyan-800','Pending':'bg-amber-100 text-amber-800','Completed':'bg-emerald-100 text-emerald-800','Declined':'bg-rose-100 text-rose-800','Cancelled':'bg-slate-200 text-slate-700','Past — Awaiting Verification':'bg-indigo-100 text-indigo-800'};
+          $('studentSessionList').innerHTML=visible.length?visible.map(b=>{
+            const status=studentSessionStatus(b),tutor=tutors.find(t=>t.id===b.tutorUid);
+            const label=bookingDisplaySubject(b);
+            return `<article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"><div class="flex flex-wrap items-start justify-between gap-2 mb-4"><div><h3 class="font-extrabold text-slate-900">${safe(label)}</h3><p class="text-xs text-slate-500 mt-1">${safe(b.level||'')} · ${safe(tutor?.name||b.tutorName||'Assigned Tutor')}</p></div><span class="text-[11px] font-bold px-3 py-1.5 rounded-full ${palette[status]||palette.Pending}">${safe(status)}</span></div><div class="grid grid-cols-2 gap-3 text-xs text-slate-600"><div><i class="fa-regular fa-calendar text-indigo-500 mr-1"></i>${safe(b.date||'Date not set')}</div><div><i class="fa-regular fa-clock text-indigo-500 mr-1"></i>${safe(b.time||'Time not set')}</div><div class="col-span-2"><i class="fa-solid fa-location-dot text-indigo-500 mr-1"></i>${safe(b.format||'Format not set')}</div></div>${status==='Past — Awaiting Verification'?'<p class="mt-4 text-xs text-indigo-700">This session date has passed. Completion has not yet been verified.</p>':''}</article>`;
+          }).join(''):`<div class="md:col-span-2 bg-white border border-slate-200 rounded-2xl p-10 text-center"><i class="fa-regular fa-calendar text-3xl text-slate-300"></i><p class="text-sm font-semibold text-slate-700 mt-3">No ${studentSessionFilter==='All'?'sessions':studentSessionFilter.toLowerCase()+' sessions'} found.</p><p class="text-xs text-slate-500 mt-2">Your bookings will appear here when you use the same student account.</p></div>`;
         }
 
         // Modal Controls
@@ -1811,7 +1902,7 @@ function updateStats() {
             showToast(migrated?`Secured ${migrated} tutor GPA record(s).`:'No legacy public GPA fields remain.');
           }catch(e){errorMsg(e);}
         }
-        Object.assign(window,{switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openTutorHistory,closeTutorHistory,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
+        Object.assign(window,{openStudentSessions,handleStudentLogin,logoutStudent,refreshStudentSessions,setStudentSessionFilter,switchPortal,openModal,closeModal,showToast,openAdminPasswordModal,handleAdminLogin,logoutAdmin,openTutorLoginModal,handleTutorLogin,logoutTutor,handleTutorSignUp,updateBookingTutorDropdown,updateBookingLessonOptions,handleTuteeBookingSubmit,populateSchoolFilter,renderPublicTutors,renderPublicSessionLog,renderTutorDashboard,acceptBooking,declineBooking,handleSessionLogSubmit,renderAdminDashboard,openTutorHistory,closeTutorHistory,openInterviewModal,confirmTutorInterview,rejectTutorApplication,revokeTutor,updateStats,verifyHours,findReviewBookings,submitTutorReview,updateTutorSubjectSelection,openEditSubjects,updateEditSubjectCount,submitSubjectRequest,decideSubjectRequest,migrateTutorGpa,setGpaVisibility});
     </script>
 </body>
 </html>
